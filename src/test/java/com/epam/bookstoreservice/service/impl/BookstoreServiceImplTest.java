@@ -9,6 +9,7 @@ import com.epam.bookstoreservice.entity.BookEntity;
 import com.epam.bookstoreservice.exception.InsufficientInventoryException;
 import com.epam.bookstoreservice.mapper.BookDtoToBookEntityMapper;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +56,7 @@ class BookstoreServiceImplTest {
     private static final List<BookEntity> BOOK_ENTITY_LIST=new ArrayList<>();
 
     private static final SellDto SELL_DTO=new SellDto(1,2);
+
 
     @BeforeEach
     public void init() {
@@ -115,7 +117,17 @@ class BookstoreServiceImplTest {
         Assertions.assertEquals(result,true);
     }
 
+    @Test
+    void sellABookUnsuccessfully(){
+        try {
+            Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(SOLD_OUT_BOOK));
+            Boolean result = bookstoreService.sellABook(ID);
+            Assert.fail("Expected an InsufficientInventoryException to be thrown");
+        } catch (InsufficientInventoryException ex) {
+            Assert.assertEquals(ex.getErrorMsg(), "This book is out of stock");
+        }
 
+    }
     @Test
     void sellListOfBooksSuccessfully(){
         List<BookEntity> bookEntityList = new ArrayList<>();
