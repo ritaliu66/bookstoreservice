@@ -1,10 +1,9 @@
 package com.epam.bookstoreservice.service.impl;
 
-import com.epam.bookstoreservice.BookstoreserviceApplication;
+import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.config.jwt.JwtTokenUtil;
 import com.epam.bookstoreservice.config.security.UserDetail;
 import com.epam.bookstoreservice.entity.UserEntity;
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
-@SpringBootTest(classes = BookstoreserviceApplication.class)
+@SpringBootTest(classes = BookstoreServiceApplication.class)
 class LoginServiceImplTest {
 
     @InjectMocks

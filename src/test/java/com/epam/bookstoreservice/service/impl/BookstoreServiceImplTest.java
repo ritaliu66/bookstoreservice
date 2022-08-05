@@ -1,6 +1,6 @@
 package com.epam.bookstoreservice.service.impl;
 
-import com.epam.bookstoreservice.BookstoreserviceApplication;
+import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dao.BookDao;
 import com.epam.bookstoreservice.dto.request.BookRequestDto;
 import com.epam.bookstoreservice.dto.request.SellDto;
@@ -10,11 +10,9 @@ import com.epam.bookstoreservice.exception.InsufficientInventoryException;
 import com.epam.bookstoreservice.mapper.BookDtoToBookEntityMapper;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,7 +25,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest(classes = BookstoreserviceApplication.class)
+@SpringBootTest(classes = BookstoreServiceApplication.class)
 class BookstoreServiceImplTest {
 
     @InjectMocks

@@ -1,6 +1,6 @@
 package com.epam.bookstoreservice.service.impl;
 
-import com.epam.bookstoreservice.BookstoreserviceApplication;
+import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dao.UserDao;
 import com.epam.bookstoreservice.entity.UserEntity;
 import org.junit.Before;
@@ -12,9 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest(classes = BookstoreserviceApplication.class)
+@SpringBootTest(classes = BookstoreServiceApplication.class)
 class UserServiceImplTest {
 
     @InjectMocks
