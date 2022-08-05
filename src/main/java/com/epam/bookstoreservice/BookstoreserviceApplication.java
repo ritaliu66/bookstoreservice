@@ -6,10 +6,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @SpringBootApplication
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class BookstoreserviceApplication {
+public class BookstoreServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BookstoreserviceApplication.class, args);
+		SpringApplication.run(BookstoreServiceApplication.class, args);
 	}
 
 }
