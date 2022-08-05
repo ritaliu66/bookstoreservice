@@ -1,6 +1,5 @@
 package com.epam.bookstoreservice.service;
 
-import com.epam.bookstoreservice.config.security.UserDetail;
 import com.epam.bookstoreservice.entity.UserEntity;
 import org.springframework.stereotype.Service;
 
