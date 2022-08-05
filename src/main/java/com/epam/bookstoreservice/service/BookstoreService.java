@@ -7,6 +7,9 @@ import com.epam.bookstoreservice.entity.BookEntity;
 
 import java.util.List;
 
+/**
+ * the service for bookstore
+ */
 public interface BookstoreService {
     BookResponseDto addNewBook(BookRequestDto book);
 
