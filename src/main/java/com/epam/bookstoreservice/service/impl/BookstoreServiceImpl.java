@@ -108,14 +108,5 @@ public class BookstoreServiceImpl implements BookstoreService {
 
         return true;
 
-//        sellDtoList.stream().forEach(sellDto -> {
-//            Optional<BookEntity> bookById = bookDao.findById(sellDto.getId());
-//            BookEntity bookEntity = bookById.get();
-//            if (bookEntity.getTotalCount() - bookEntity.getSold() <= 0) {
-//                return;
-//            }
-//            bookEntity.setSold(bookEntity.getSold() - sellDto.getNumber());
-//        });
-//        return true;
     }
 }
