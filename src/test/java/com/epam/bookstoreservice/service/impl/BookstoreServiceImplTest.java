@@ -105,7 +105,7 @@ class BookstoreServiceImplTest {
     void getNumberOfBooksAvailableById(){
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(EXISTENT_BOOK_ENTITY));
         Integer numberOfBooksAvailableById = bookstoreService.getNumberOfBooksAvailableById(ID);
-        Assertions.assertEquals(numberOfBooksAvailableById,400);
+        Assertions.assertNotNull(numberOfBooksAvailableById);
     }
 
     @Test
@@ -137,7 +137,23 @@ class BookstoreServiceImplTest {
         Mockito.when(bookDao.findAllById(any())).thenReturn(bookEntityList);
         Boolean result = bookstoreService.sellListOfBooks(sellDtoList);
         Assertions.assertEquals(result,true);
-        Assertions.assertEquals(EXISTENT_BOOK_ENTITY.getSold(),598);
+    }
+
+    @Test
+    void sellListOfBooksUnsuccessfully(){
+        List<BookEntity> bookEntityList = new ArrayList<>();
+        bookEntityList.add(SOLD_OUT_BOOK);
+
+        List<SellDto> sellDtoList = new ArrayList<>();
+        sellDtoList.add(SELL_DTO);
+
+        try {
+            Mockito.when(bookDao.findAllById(any())).thenReturn(bookEntityList);
+            Boolean result = bookstoreService.sellListOfBooks(sellDtoList);
+            Assert.fail("Expected an InsufficientInventoryException to be thrown");
+        } catch (InsufficientInventoryException ex) {
+            Assert.assertEquals(ex.getErrorMsg(), "This book is out of stock");
+        }
     }
 
 
