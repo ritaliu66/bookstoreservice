@@ -6,6 +6,8 @@ import com.epam.bookstoreservice.dto.request.SellDto;
 import com.epam.bookstoreservice.dto.response.BookResponseDto;
 import com.epam.bookstoreservice.entity.BookEntity;
 import com.epam.bookstoreservice.exception.InsufficientInventoryException;
+import com.epam.bookstoreservice.exception.NoSuchBookException;
+import com.epam.bookstoreservice.exception.UnmatchedIdException;
 import com.epam.bookstoreservice.mapper.BookDtoToBookEntityMapper;
 import com.epam.bookstoreservice.service.BookstoreService;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -109,4 +112,62 @@ public class BookstoreServiceImpl implements BookstoreService {
         return true;
 
     }
+
+    @Override
+    public BookResponseDto updateABook(Integer id, BookRequestDto book) {
+        if (Objects.nonNull(book.getId()) && !Objects.equals(id, book.getId())) {
+            throw new UnmatchedIdException();
+        }
+
+        Optional<BookEntity> bookById = bookDao.findById(id);
+        if (bookById.isEmpty()) {
+            throw new NoSuchBookException();
+        }
+        BookEntity bookEntity = bookById.get();
+        bookEntity.setTitle(book.getTitle());
+        bookEntity.setAuthor(book.getAuthor());
+        bookEntity.setCategory(book.getCategory());
+        bookEntity.setPrice(book.getPrice());
+        bookEntity.setTotalCount(book.getTotalCount());
+        return bookRequestDtoToBookEntity.entityToResponseDto(bookDao.save(bookEntity));
+    }
+
+    @Override
+    public List<BookResponseDto> getBooksByCategoryAndKeyWord(String category, String keyword) {
+        return getBooksByCategoryAndKeyWordUtil(category, keyword);
+
+    }
+
+    @Override
+    public Integer getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
+        List<BookResponseDto> booksByCategoryAndKeyWord = getBooksByCategoryAndKeyWordUtil(category, keyword);
+        int totalSold = 0;
+        for (BookResponseDto book : booksByCategoryAndKeyWord) {
+            totalSold += book.getSold();
+        }
+        return totalSold;
+    }
+
+
+    private List<BookResponseDto> getBooksByCategoryAndKeyWordUtil(String category, String keyword) {
+        Integer bookId = -1;
+        try {
+
+            bookId = Integer.valueOf(keyword);
+
+        } catch (Exception ignored) {
+            
+        }
+        List<BookEntity> byCategoryAndKeyword = bookDao.findByCategoryAndKeyword(category, bookId, keyword);
+
+        if (byCategoryAndKeyword.isEmpty()) {
+            throw new NoSuchBookException();
+        }
+        List<BookResponseDto> bookResponseDtoListByAuthorOrTitle = new ArrayList<>();
+        byCategoryAndKeyword.forEach(bookEntity ->
+                bookResponseDtoListByAuthorOrTitle.add(bookRequestDtoToBookEntity.entityToResponseDto(bookEntity))
+        );
+        return bookResponseDtoListByAuthorOrTitle;
+    }
 }
+

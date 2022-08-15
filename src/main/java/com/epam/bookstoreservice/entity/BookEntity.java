@@ -48,8 +48,4 @@ public class BookEntity {
     @Column
     private Integer sold=0;
 
-    @Column(columnDefinition = "int default 0")
-    public Integer getSold() {
-        return sold;
-    }
 }

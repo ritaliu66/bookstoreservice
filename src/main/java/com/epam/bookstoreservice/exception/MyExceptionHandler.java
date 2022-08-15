@@ -12,7 +12,21 @@ import java.util.Map;
 @ControllerAdvice
 public class MyExceptionHandler {
     @ExceptionHandler(value = InsufficientInventoryException.class)
-    public ResponseEntity<Map> dealWithException(InsufficientInventoryException ex) {
+    public ResponseEntity<Map> dealWithInsufficientInventoryException(InsufficientInventoryException ex) {
+        Map<Integer, String> result = new HashMap<>();
+        result.put(ex.getErrorCode(),ex.getErrorMsg());
+        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = NoSuchBookException.class)
+    public ResponseEntity<Map> dealWithNoSuchBookException(NoSuchBookException ex){
+        Map<Integer, String> result = new HashMap<>();
+        result.put(ex.getErrorCode(),ex.getErrorMsg());
+        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = UnmatchedIdException.class)
+    public ResponseEntity<Map> dealWithUnmatchedIdException(UnmatchedIdException ex){
         Map<Integer, String> result = new HashMap<>();
         result.put(ex.getErrorCode(),ex.getErrorMsg());
         return new ResponseEntity(result,HttpStatus.BAD_REQUEST);

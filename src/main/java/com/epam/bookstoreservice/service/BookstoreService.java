@@ -3,6 +3,7 @@ package com.epam.bookstoreservice.service;
 import com.epam.bookstoreservice.dto.request.BookRequestDto;
 import com.epam.bookstoreservice.dto.request.SellDto;
 import com.epam.bookstoreservice.dto.response.BookResponseDto;
+import com.epam.bookstoreservice.entity.BookEntity;
 
 import java.util.List;
 
@@ -23,4 +24,10 @@ public interface BookstoreService {
     Boolean sellABook(Integer id);
 
     Boolean sellListOfBooks(List<SellDto> sellDtoList);
+
+    BookResponseDto updateABook(Integer id, BookRequestDto book);
+
+    List<BookResponseDto> getBooksByCategoryAndKeyWord(String category,String keyword);
+
+    Integer getNumberOfBooksSoldPerCategoryAndKeyword(String category,String keyword);
 }

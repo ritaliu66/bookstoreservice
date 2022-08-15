@@ -4,19 +4,17 @@ package com.epam.bookstoreservice.controller;
 import com.epam.bookstoreservice.dto.request.BookRequestDto;
 import com.epam.bookstoreservice.dto.request.SellDto;
 import com.epam.bookstoreservice.dto.response.BookResponseDto;
-import com.epam.bookstoreservice.entity.BookEntity;
 import com.epam.bookstoreservice.service.BookstoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -85,4 +83,24 @@ public class BookStoreController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping("/update-book/{id}")
+    @ApiOperation("update a book")
+    public ResponseEntity<BookResponseDto> updateABook(@PathVariable Integer id, BookRequestDto book) {
+        BookResponseDto bookResponseDto = bookstoreService.updateABook(id, book);
+        return ResponseEntity.ok(bookResponseDto);
+    }
+
+    @GetMapping("/books")
+    @ApiOperation("get books by category and keyword")
+    public ResponseEntity<List<BookResponseDto>> getBooksByCategoryAndKeyWord(String category, String keyword) {
+        List<BookResponseDto> booksByCategoryAndKeyWord = bookstoreService.getBooksByCategoryAndKeyWord(category, keyword);
+        return ResponseEntity.ok(booksByCategoryAndKeyWord);
+    }
+
+    @GetMapping("/number-of-books")
+    @ApiOperation("get number of books sold per category and keyword")
+    public ResponseEntity<Integer> getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
+        Integer numberOfBooksSoldPerCategoryAndKeyword = bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword);
+        return ResponseEntity.ok(numberOfBooksSoldPerCategoryAndKeyword);
+    }
 }
