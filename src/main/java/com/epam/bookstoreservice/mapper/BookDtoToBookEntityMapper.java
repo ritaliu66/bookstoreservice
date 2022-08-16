@@ -14,7 +14,7 @@ public interface BookDtoToBookEntityMapper {
     @Mapping(target = "category", source = "category")
     @Mapping(target = "price", source = "price")
     @Mapping(target = "totalCount", source = "totalCount")
-    BookEntity requestDtoToEntity(BookRequestDto person);
+    BookEntity requestDtoToEntity(BookRequestDto bookRequestDto);
 
     @Mapping(target = "author", source = "author")
     @Mapping(target = "title", source = "title")

@@ -1,7 +1,6 @@
 package com.epam.bookstoreservice.controller;
 
-import com.epam.bookstoreservice.config.security.UserDetail;
-import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.dto.request.UserRequestDto;
 import com.epam.bookstoreservice.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,13 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * the controller for login
  */
 @RestController
-@RequestMapping("v1/login")
+@RequestMapping("/v1/login")
 @Api("user login")
 public class LoginController {
 
@@ -28,8 +25,8 @@ public class LoginController {
     @PostMapping("/token")
     @ApiOperation(value = "get a token")
     @CrossOrigin
-    public ResponseEntity<String> login(UserEntity userEntity) {
-        String token = loginService.login(userEntity);
+    public ResponseEntity<String> login(UserRequestDto userRequestDto) {
+        String token = loginService.login(userRequestDto);
         return ResponseEntity.ok(token);
     }
 

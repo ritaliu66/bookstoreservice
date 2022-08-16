@@ -1,10 +1,10 @@
 package com.epam.bookstoreservice.config.jwt;
 
+import com.epam.bookstoreservice.model.LoginUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -28,14 +28,14 @@ public class JwtTokenUtil {
     /**
      * Generate a token based on user information
      *
-     * @param userdetails
+     * @param loginUserDetails
      * @return
      */
-    public String generateToken(UserDetails userdetails) {
+    public String generateToken(LoginUserDetails loginUserDetails) {
 
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put(CLAIM_KEY_USERNAME, userdetails.getUsername());
+        claims.put(CLAIM_KEY_USERNAME, loginUserDetails.getPhoneNumber());
         claims.put(CLAIM_KEY_CREATE, new Date());
 
         return generateToken(claims);
@@ -60,17 +60,29 @@ public class JwtTokenUtil {
         return userName;
     }
 
+    public Integer getPhoneNumberFromToken(String token) {
+        Integer phoneNumber;
+
+        try {
+            Claims claims = getClaimsFromToken(token);
+            phoneNumber = Integer.valueOf(claims.getSubject());
+        } catch (Exception e) {
+            phoneNumber = null;
+        }
+
+        return phoneNumber;
+    }
+
     /**
      * Check whether the token is valid
      *
      * @param token
-     * @param userDetails
+     * @param loginUserDetails
      * @return
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        String userName = getUserNameFromToken(token);
-
-        return userName.equals(userDetails.getUsername()) && isTokenExpired(token);
+    public Boolean validateToken(String token, LoginUserDetails loginUserDetails) {
+        Integer phoneNumberFromToken = getPhoneNumberFromToken(token);
+        return phoneNumberFromToken.equals(loginUserDetails.getPhoneNumber()) && isTokenExpired(token);
     }
 
     /**
@@ -81,7 +93,6 @@ public class JwtTokenUtil {
      */
     private boolean isTokenExpired(String token) {
         Date expireDate = getExpiredDateFromToken(token);
-
         return expireDate.after(new Date());
     }
 

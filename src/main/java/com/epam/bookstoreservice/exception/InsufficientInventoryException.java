@@ -1,6 +1,7 @@
 package com.epam.bookstoreservice.exception;
 
 
+import com.epam.bookstoreservice.exception.errorcode.MyErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 

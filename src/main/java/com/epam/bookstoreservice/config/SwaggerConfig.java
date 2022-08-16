@@ -10,6 +10,7 @@ import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Header;
 import springfox.documentation.service.Parameter;
 import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
@@ -27,26 +28,27 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig {
     @Bean
-    public Docket customDocket() {
-        ParameterBuilder ticketPar = new ParameterBuilder();
-        List<Parameter> pars = new ArrayList<Parameter>();
-
-        ticketPar.name("Authorization").description("token")
-                .modelRef(new ModelRef("string")).parameterType("header")
-                .required(false).build();
-        pars.add(ticketPar.build());
+    public Docket docketWithToken() {
+//        ParameterBuilder ticketPar = new ParameterBuilder();
+//        List<Parameter> pars = new ArrayList<Parameter>();
+//
+//        ticketPar.name("Authorization").description("token")
+//                .modelRef(new ModelRef("string")).parameterType("header").defaultValue("Bearer ")
+//                .required(false).build();
+//        pars.add(ticketPar.build());
 
         return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.epam.bookstoreservice.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .globalOperationParameters(pars)
-                .apiInfo(apiInfo())
+//                .globalOperationParameters(pars)
 //                Set the Global Token
-                .securityContexts(securityContexts())
-                .securitySchemes(securitySchemes());
+                .securitySchemes(securitySchemes())
+                .securityContexts(securityContexts());
     }
+
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
@@ -69,7 +71,8 @@ public class SwaggerConfig {
     private List<SecurityContext> securityContexts() {
         List<SecurityContext> result = new ArrayList<>();
 
-        result.add(getContextByPath("/demo/.*"));
+        result.add(getContextByPath("v1/user/.*"));
+        result.add(getContextByPath("v1/login/.*"));
 
         return result;
     }
@@ -82,17 +85,14 @@ public class SwaggerConfig {
     }
 
     private List<SecurityReference> defaultAuth() {
-        List<SecurityReference> result = new ArrayList<>();
 
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "acessEverything");
-
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-
         authorizationScopes[0] = authorizationScope;
+        List<SecurityReference> securityReferences = new ArrayList<>();
+        securityReferences.add(new SecurityReference("Authorization", authorizationScopes));
+        return securityReferences;
 
-        result.add(new SecurityReference("Authorization", authorizationScopes));
-
-        return result;
     }
 
 }

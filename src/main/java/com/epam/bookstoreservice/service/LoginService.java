@@ -1,6 +1,6 @@
 package com.epam.bookstoreservice.service;
 
-import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.dto.request.UserRequestDto;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,10 +12,10 @@ public interface LoginService {
     /**
      * Log in and return the token
      *
-     * @param userEntity
+     * @param userRequestDto
      * @return
      */
-    String login(UserEntity userEntity);
+    String login(UserRequestDto userRequestDto);
 
 
 }

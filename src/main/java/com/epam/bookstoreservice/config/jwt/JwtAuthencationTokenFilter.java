@@ -1,11 +1,12 @@
 package com.epam.bookstoreservice.config.jwt;
 
+import com.epam.bookstoreservice.config.security.UserDetailsServiceImpl;
+import com.epam.bookstoreservice.model.LoginUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,7 +33,7 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -40,15 +41,15 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
         //There is a token
         if (Objects.nonNull(authHeader) && authHeader.startsWith(tokenHead)) {
             String authToken = authHeader.substring(tokenHead.length());
-            String userName = jwtTokenUtil.getUserNameFromToken(authToken);
+            Integer phoneNumberFromToken = jwtTokenUtil.getPhoneNumberFromToken(authToken);
 
             //The token has a user name but is not logged in
-            if (Objects.nonNull(userName) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
+            if (Objects.nonNull(phoneNumberFromToken) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
                 //login
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                UserDetails userDetails = userDetailsService.loadUserByPhoneNumber(phoneNumberFromToken);
 
                 //Check whether the token is valid and reset the user object parameters
-                if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+                if (jwtTokenUtil.validateToken(authToken, (LoginUserDetails) userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken
                             = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));

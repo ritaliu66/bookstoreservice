@@ -2,10 +2,15 @@ package com.epam.bookstoreservice.service.impl;
 
 import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dao.UserDao;
-import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.dto.request.UserRequestDto;
+import com.epam.bookstoreservice.dto.response.UserResponseDto;
+import com.epam.bookstoreservice.mapper.BookDtoToBookEntityMapper;
+import com.epam.bookstoreservice.mapper.UserDtoToUserEntityMapper;
 import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -24,22 +29,27 @@ class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    private static final String USERNAME="2";
+    private static final String USERNAME = "2";
 
-    private static final String PASSWORD="2";
+    private static final String PASSWORD = "2";
 
-    @Before
-    public void init(){
-        userService=new UserServiceImpl(userDao,passwordEncoder);
+    private final static Integer PHONE_NUMBER = 111;
+
+    private final UserDtoToUserEntityMapper userDtoToUserEntityMapper = Mappers.getMapper(
+            UserDtoToUserEntityMapper.class);
+
+    @BeforeEach
+    public void init() {
+        userService = new UserServiceImpl(userDao,passwordEncoder, userDtoToUserEntityMapper);
     }
-
     @Test
     void register() {
-        UserEntity userEntity = new UserEntity(USERNAME, PASSWORD);
+        UserRequestDto userRequestDto = new UserRequestDto(USERNAME, PASSWORD, PHONE_NUMBER);
 
-        Mockito.when(passwordEncoder.encode(userEntity.getPassword())).thenReturn(PASSWORD);
-        UserEntity result = userService.register(userEntity);
+        Mockito.when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn(PASSWORD);
 
-        Assertions.assertNull(result);
+        UserResponseDto responseDto = userService.register(userRequestDto);
+
+        Assertions.assertNotNull(responseDto);
     }
 }

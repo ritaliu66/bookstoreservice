@@ -1,9 +1,6 @@
 package com.epam.bookstoreservice.config.security;
 
 import com.epam.bookstoreservice.config.jwt.JwtAuthencationTokenFilter;
-import com.epam.bookstoreservice.dao.UserDao;
-import com.epam.bookstoreservice.entity.UserEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,8 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDao loginService;
     @Autowired
     private RestAuthorizationEntryPoint restAuthorizationEntryPoint;
     @Autowired
@@ -60,17 +54,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(restAuthorizationEntryPoint);
     }
 
-    @Override
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return (username) -> {
-            UserEntity user = loginService.findByUsername(username);
-            UserDetail userDetail = new UserDetail();
-            BeanUtils.copyProperties(user, userDetail);
-            return userDetail;
-        };
-
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

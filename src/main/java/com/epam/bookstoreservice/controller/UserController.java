@@ -1,6 +1,7 @@
 package com.epam.bookstoreservice.controller;
 
-import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.dto.request.UserRequestDto;
+import com.epam.bookstoreservice.dto.response.UserResponseDto;
 import com.epam.bookstoreservice.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,8 +25,8 @@ public class UserController {
 
     @PostMapping("/register")
     @ApiOperation("user register")
-    public ResponseEntity<UserEntity> register(UserEntity userEntity){
-        return ResponseEntity.ok(userService.register(userEntity));
+    public ResponseEntity<UserResponseDto> register(UserRequestDto userRequestDto){
+        return ResponseEntity.ok(userService.register(userRequestDto));
     }
 
 }

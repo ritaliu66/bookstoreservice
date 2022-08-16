@@ -1,6 +1,9 @@
 server:
   port: 8081
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
   application:
     name: bookstoreService
   datasource:
@@ -17,4 +20,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL55Dialect
     show-sql: true
 
-
+jwt:
+  expiration: 604800
+  secret: bookstore-secret
+  tokenHead: Bearer
+  tokenHeader: Authorization

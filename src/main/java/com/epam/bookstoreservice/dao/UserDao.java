@@ -13,4 +13,6 @@ public interface UserDao extends JpaRepository<UserEntity,Integer> {
 
 
     UserEntity findByUsername(String username);
+
+    UserEntity findByPhoneNumber(Integer phoneNumber);
 }

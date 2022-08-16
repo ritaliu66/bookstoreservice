@@ -1,6 +1,10 @@
-package com.epam.bookstoreservice.exception;
+package com.epam.bookstoreservice.exception.handler;
 
 
+import com.epam.bookstoreservice.exception.InsufficientInventoryException;
+import com.epam.bookstoreservice.exception.NoSuchBookException;
+import com.epam.bookstoreservice.exception.PhoneNumberNotFoundException;
+import com.epam.bookstoreservice.exception.UnmatchedIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +31,13 @@ public class MyExceptionHandler {
 
     @ExceptionHandler(value = UnmatchedIdException.class)
     public ResponseEntity<Map> dealWithUnmatchedIdException(UnmatchedIdException ex){
+        Map<Integer, String> result = new HashMap<>();
+        result.put(ex.getErrorCode(),ex.getErrorMsg());
+        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map> dealWithPhoneNumberNotFoundException(PhoneNumberNotFoundException  ex){
         Map<Integer, String> result = new HashMap<>();
         result.put(ex.getErrorCode(),ex.getErrorMsg());
         return new ResponseEntity(result,HttpStatus.BAD_REQUEST);

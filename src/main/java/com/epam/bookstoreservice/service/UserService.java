@@ -1,6 +1,7 @@
 package com.epam.bookstoreservice.service;
 
-import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.dto.request.UserRequestDto;
+import com.epam.bookstoreservice.dto.response.UserResponseDto;
 
 /**
  * the service for user
@@ -12,5 +13,5 @@ public interface UserService {
      * @param userEntity
      * @return
      */
-    UserEntity register(UserEntity userEntity);
+    UserResponseDto register(UserRequestDto userEntity);
 }

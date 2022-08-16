@@ -6,14 +6,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UnmatchedIdException extends RuntimeException {
+public class PhoneNumberNotFoundException extends RuntimeException{
     private Integer errorCode;
 
     private String errorMsg;
 
-    public UnmatchedIdException() {
+    public PhoneNumberNotFoundException() {
         super();
-        this.errorCode = MyErrorCode.UNMATCHED_ID;
-        this.errorMsg = "The id in the BookDTO does not match the path variable id";
+        this.errorCode = MyErrorCode.PHONE_NUMBER_NOT_FOUND;
+        this.errorMsg = "This phone number can not be found";
     }
 }

@@ -22,6 +22,7 @@ import javax.persistence.Table;
 @Setter
 @JsonIgnoreProperties({"password"})
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
     @Id
@@ -34,8 +35,7 @@ public class UserEntity {
     @Column(nullable = false, length = 255)
     private String password;
 
-    public UserEntity(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    @Column(nullable = false,length = 11)
+    private Integer phoneNumber;
+
 }
