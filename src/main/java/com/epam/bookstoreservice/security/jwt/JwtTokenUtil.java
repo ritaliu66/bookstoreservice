@@ -1,6 +1,6 @@
-package com.epam.bookstoreservice.config.jwt;
+package com.epam.bookstoreservice.security.jwt;
 
-import com.epam.bookstoreservice.model.LoginUserDetails;
+import com.epam.bookstoreservice.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Some tools related to JWT token
@@ -28,61 +29,39 @@ public class JwtTokenUtil {
     /**
      * Generate a token based on user information
      *
-     * @param loginUserDetails
+     * @param userEntity
      * @return
      */
-    public String generateToken(LoginUserDetails loginUserDetails) {
+    public String generateToken(UserEntity userEntity) {
 
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put(CLAIM_KEY_USERNAME, loginUserDetails.getPhoneNumber());
+        claims.put(CLAIM_KEY_USERNAME, userEntity.getPhoneNumber());
         claims.put(CLAIM_KEY_CREATE, new Date());
 
         return generateToken(claims);
     }
 
-    /**
-     * Obtain the user name from the token
-     *
-     * @param token
-     * @return
-     */
-    public String getUserNameFromToken(String token) {
-        String userName;
 
-        try {
-            Claims claims = getClaimsFromToken(token);
-            userName = claims.getSubject();
-        } catch (Exception e) {
-            userName = null;
+    public String getPhoneNumberFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        if (Objects.isNull(claims)) {
+            return null;
         }
 
-        return userName;
-    }
-
-    public Integer getPhoneNumberFromToken(String token) {
-        Integer phoneNumber;
-
-        try {
-            Claims claims = getClaimsFromToken(token);
-            phoneNumber = Integer.valueOf(claims.getSubject());
-        } catch (Exception e) {
-            phoneNumber = null;
-        }
-
-        return phoneNumber;
+        return claims.getSubject();
     }
 
     /**
      * Check whether the token is valid
      *
      * @param token
-     * @param loginUserDetails
+     * @param userEntity
      * @return
      */
-    public Boolean validateToken(String token, LoginUserDetails loginUserDetails) {
-        Integer phoneNumberFromToken = getPhoneNumberFromToken(token);
-        return phoneNumberFromToken.equals(loginUserDetails.getPhoneNumber()) && isTokenExpired(token);
+    public Boolean validateToken(String token, UserEntity userEntity) {
+        String phoneNumberFromToken = getPhoneNumberFromToken(token);
+        return phoneNumberFromToken.equals(userEntity.getPhoneNumber()) && isTokenNotExpired(token);
     }
 
     /**
@@ -91,8 +70,11 @@ public class JwtTokenUtil {
      * @param token
      * @return
      */
-    private boolean isTokenExpired(String token) {
+    private boolean isTokenNotExpired(String token) {
         Date expireDate = getExpiredDateFromToken(token);
+        if (Objects.isNull(expireDate)) {
+            return true;
+        }
         return expireDate.after(new Date());
     }
 
@@ -103,7 +85,7 @@ public class JwtTokenUtil {
      * @return
      */
     public Boolean canRefresh(String token) {
-        return !isTokenExpired(token);
+        return !isTokenNotExpired(token);
     }
 
     /**
@@ -114,6 +96,9 @@ public class JwtTokenUtil {
      */
     public String refreshToken(String token) {
         Claims claims = getClaimsFromToken(token);
+        if (Objects.isNull(claims)) {
+            return null;
+        }
         claims.put(CLAIM_KEY_CREATE, new Date());
         return generateToken(claims);
     }
@@ -126,7 +111,9 @@ public class JwtTokenUtil {
      */
     private Date getExpiredDateFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
-
+        if (Objects.isNull(claims)) {
+            return null;
+        }
         return claims.getExpiration();
     }
 
@@ -138,7 +125,6 @@ public class JwtTokenUtil {
      */
     private Claims getClaimsFromToken(String token) {
         Claims claims = null;
-
         try {
             claims = Jwts.parser()
                     .setSigningKey(secret)

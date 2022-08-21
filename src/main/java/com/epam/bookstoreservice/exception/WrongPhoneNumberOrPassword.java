@@ -6,14 +6,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PhoneNumberNotFoundException extends RuntimeException {
+public class WrongPhoneNumberOrPassword extends RuntimeException {
+
     private final Integer errorCode;
 
     private final String errorMsg;
 
-    public PhoneNumberNotFoundException() {
+    public WrongPhoneNumberOrPassword() {
         super();
-        this.errorCode = MyErrorCode.PHONE_NUMBER_NOT_FOUND;
-        this.errorMsg = "This phone number can not be found";
+        this.errorCode = MyErrorCode.WRONG_PHONE_NUMBER_OR_PASSWORD;
+        this.errorMsg = "login failed, wrong user name or password";
     }
 }

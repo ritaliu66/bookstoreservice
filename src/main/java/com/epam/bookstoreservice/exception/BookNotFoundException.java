@@ -7,14 +7,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NoSuchBookException extends RuntimeException {
-    private Integer errorCode;
+public class BookNotFoundException extends RuntimeException {
+    private final Integer errorCode;
 
-    private String errorMsg;
+    private final String errorMsg;
 
-    public NoSuchBookException() {
+    public BookNotFoundException() {
         super();
-        this.errorCode = MyErrorCode.NO_SUCH_BOOK;
+        this.errorCode = MyErrorCode.BOOK_NOT_FOUND;
         this.errorMsg = "This book is not available in the bookstore";
     }
 }

@@ -1,7 +1,8 @@
-package com.epam.bookstoreservice.dto.response;
+package com.epam.bookstoreservice.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +14,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel
-public class BookResponseDto {
+@Builder
+public class BookRequestDTO {
+
     private Integer id;
 
     private String author;
@@ -26,5 +29,4 @@ public class BookResponseDto {
 
     private Integer totalCount;
 
-    private Integer sold;
 }

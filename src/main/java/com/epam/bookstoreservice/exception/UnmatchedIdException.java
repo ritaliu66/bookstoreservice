@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UnmatchedIdException extends RuntimeException {
-    private Integer errorCode;
+    private final Integer errorCode;
 
-    private String errorMsg;
+    private final String errorMsg;
 
     public UnmatchedIdException() {
         super();

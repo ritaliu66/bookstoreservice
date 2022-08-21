@@ -1,9 +1,9 @@
 package com.epam.bookstoreservice.service;
 
-import com.epam.bookstoreservice.dto.request.BookRequestDto;
-import com.epam.bookstoreservice.dto.request.SellDto;
-import com.epam.bookstoreservice.dto.response.BookResponseDto;
-import com.epam.bookstoreservice.entity.BookEntity;
+import com.epam.bookstoreservice.dto.request.BookRequestDTO;
+import com.epam.bookstoreservice.dto.request.SellDTO;
+import com.epam.bookstoreservice.dto.response.BookResponseDTO;
+import com.epam.bookstoreservice.dto.response.Result;
 
 import java.util.List;
 
@@ -11,23 +11,23 @@ import java.util.List;
  * the service for bookstore
  */
 public interface BookstoreService {
-    BookResponseDto addNewBook(BookRequestDto book);
+    Result<BookResponseDTO> addNewBook(BookRequestDTO book);
 
-    BookResponseDto addBook(BookRequestDto book);
+    Result<BookResponseDTO> addBook(BookRequestDTO book);
 
-    BookResponseDto getBookById(Integer id);
+    Result<BookResponseDTO> getBookById(Integer id);
 
-    List<BookResponseDto> getAllBooks();
+    Result<List<BookResponseDTO>> getAllBooks();
 
-    Integer getNumberOfBooksAvailableById(Integer id);
+    Result<Integer> getNumberOfBooksAvailableById(Integer id);
 
-    Boolean sellABook(Integer id);
+    Result<BookResponseDTO> sellABook(Integer id);
 
-    Boolean sellListOfBooks(List<SellDto> sellDtoList);
+    Result<List<BookResponseDTO>> sellListOfBooks(List<SellDTO> sellDTOList);
 
-    BookResponseDto updateABook(Integer id, BookRequestDto book);
+    Result<BookResponseDTO> updateABook(Integer id, BookRequestDTO book);
 
-    List<BookResponseDto> getBooksByCategoryAndKeyWord(String category,String keyword);
+    Result<List<BookResponseDTO>> getBooksByCategoryAndKeyWord(String category, String keyword);
 
-    Integer getNumberOfBooksSoldPerCategoryAndKeyword(String category,String keyword);
+    Result<Integer> getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword);
 }

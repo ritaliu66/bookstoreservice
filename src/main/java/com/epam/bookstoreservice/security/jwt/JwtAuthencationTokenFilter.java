@@ -1,7 +1,9 @@
-package com.epam.bookstoreservice.config.jwt;
+package com.epam.bookstoreservice.security.jwt;
 
-import com.epam.bookstoreservice.config.security.UserDetailsServiceImpl;
-import com.epam.bookstoreservice.model.LoginUserDetails;
+
+import com.epam.bookstoreservice.entity.UserEntity;
+
+import com.epam.bookstoreservice.security.userdetailsservice.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,15 +43,15 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
         //There is a token
         if (Objects.nonNull(authHeader) && authHeader.startsWith(tokenHead)) {
             String authToken = authHeader.substring(tokenHead.length());
-            Integer phoneNumberFromToken = jwtTokenUtil.getPhoneNumberFromToken(authToken);
+            String phoneNumberFromToken = jwtTokenUtil.getPhoneNumberFromToken(authToken);
 
             //The token has a user name but is not logged in
             if (Objects.nonNull(phoneNumberFromToken) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
                 //login
-                UserDetails userDetails = userDetailsService.loadUserByPhoneNumber(phoneNumberFromToken);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(phoneNumberFromToken);
 
                 //Check whether the token is valid and reset the user object parameters
-                if (jwtTokenUtil.validateToken(authToken, (LoginUserDetails) userDetails)) {
+                if (Boolean.TRUE.equals(jwtTokenUtil.validateToken(authToken, (UserEntity) userDetails))) {
                     UsernamePasswordAuthenticationToken authenticationToken
                             = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));

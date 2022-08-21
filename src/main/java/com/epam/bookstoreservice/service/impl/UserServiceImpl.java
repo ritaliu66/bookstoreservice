@@ -1,8 +1,9 @@
 package com.epam.bookstoreservice.service.impl;
 
 import com.epam.bookstoreservice.dao.UserDao;
-import com.epam.bookstoreservice.dto.request.UserRequestDto;
-import com.epam.bookstoreservice.dto.response.UserResponseDto;
+import com.epam.bookstoreservice.dto.request.UserRequestDTO;
+import com.epam.bookstoreservice.dto.response.Result;
+import com.epam.bookstoreservice.dto.response.UserResponseDTO;
 import com.epam.bookstoreservice.entity.UserEntity;
 import com.epam.bookstoreservice.mapper.UserDtoToUserEntityMapper;
 import com.epam.bookstoreservice.service.UserService;
@@ -24,13 +25,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserDtoToUserEntityMapper userDtoToUserEntityMapper;
 
+    private static final String SUCCESSFUL_MESSAGE = "successful";
+
     @Override
-    public UserResponseDto register(UserRequestDto userRequestDto) {
+    public Result<UserResponseDTO> register(UserRequestDTO userRequestDto) {
         String encodePassword = passwordEncoder.encode(userRequestDto.getPassword());
         userRequestDto.setPassword(encodePassword);
         UserEntity userEntity = userDtoToUserEntityMapper.requestDtoToEntity(userRequestDto);
-        UserEntity entity = userDao.save(userEntity);
-        return userDtoToUserEntityMapper.entityToResponseDto(userEntity);
+        return Result.success(SUCCESSFUL_MESSAGE, userDtoToUserEntityMapper.entityToResponseDto(userDao.save(userEntity)));
 
     }
 }

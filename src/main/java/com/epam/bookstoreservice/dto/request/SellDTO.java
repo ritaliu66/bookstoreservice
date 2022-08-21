@@ -1,7 +1,9 @@
-package com.epam.bookstoreservice.dto.response;
+package com.epam.bookstoreservice.dto.request;
+
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,8 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel
-public class UserResponseDto {
-    private String username;
-    
-    private Integer phoneNumber;
+@Builder
+public class SellDTO {
+
+    private Integer id;
+
+    private Integer number;
 }

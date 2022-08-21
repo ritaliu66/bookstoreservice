@@ -5,13 +5,14 @@ import com.epam.bookstoreservice.exception.errorcode.MyErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 public class InsufficientInventoryException extends RuntimeException {
 
-    private Integer errorCode;
+    private final Integer errorCode;
 
-    private String errorMsg;
+    private final String errorMsg;
 
     public InsufficientInventoryException() {
         super();

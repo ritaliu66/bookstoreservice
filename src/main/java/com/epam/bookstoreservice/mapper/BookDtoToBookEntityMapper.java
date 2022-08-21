@@ -1,7 +1,7 @@
 package com.epam.bookstoreservice.mapper;
 
-import com.epam.bookstoreservice.dto.request.BookRequestDto;
-import com.epam.bookstoreservice.dto.response.BookResponseDto;
+import com.epam.bookstoreservice.dto.request.BookRequestDTO;
+import com.epam.bookstoreservice.dto.response.BookResponseDTO;
 import com.epam.bookstoreservice.entity.BookEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +14,7 @@ public interface BookDtoToBookEntityMapper {
     @Mapping(target = "category", source = "category")
     @Mapping(target = "price", source = "price")
     @Mapping(target = "totalCount", source = "totalCount")
-    BookEntity requestDtoToEntity(BookRequestDto bookRequestDto);
+    BookEntity requestDtoToEntity(BookRequestDTO bookRequestDto);
 
     @Mapping(target = "author", source = "author")
     @Mapping(target = "title", source = "title")
@@ -22,7 +22,7 @@ public interface BookDtoToBookEntityMapper {
     @Mapping(target = "price", source = "price")
     @Mapping(target = "totalCount", source = "totalCount")
     @Mapping(target = "sold", source = "sold")
-    BookResponseDto entityToResponseDto(BookEntity entity);
+    BookResponseDTO entityToResponseDto(BookEntity entity);
 
 
 }
