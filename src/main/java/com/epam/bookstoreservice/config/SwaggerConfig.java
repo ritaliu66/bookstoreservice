@@ -24,7 +24,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.epam.bookstoreservice.com.epam.bookstoreservice.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.epam.bookstoreservice.controller"))
                 .paths(PathSelectors.any())
                 .build();
 

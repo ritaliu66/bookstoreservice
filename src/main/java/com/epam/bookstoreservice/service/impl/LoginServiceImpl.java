@@ -1,8 +1,7 @@
 package com.epam.bookstoreservice.service.impl;
 
-import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.entity.UserEntity;
-import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPassword;
+import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPasswordException;
 import com.epam.bookstoreservice.security.jwt.JwtTokenUtil;
 import com.epam.bookstoreservice.security.userdetailsservice.UserDetailsServiceImpl;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
@@ -25,7 +24,6 @@ import java.util.Objects;
 @AllArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
-
     private final UserDetailsServiceImpl userDetailsService;
 
     private final PasswordEncoder passwordEncoder;
@@ -34,14 +32,12 @@ public class LoginServiceImpl implements LoginService {
 
     private static final String TOKEN_HEADER = "Bearer";
 
-    private static final String SUCCESSFUL_MESSAGE = "successful";
-
     @Override
-    public Result<String> loginAndReturnToken(UserRequestDTO userRequestDto) {
+    public String loginAndReturnToken(UserRequestDTO userRequestDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userRequestDto.getPhoneNumber());
         if (Objects.isNull(userDetails) ||
                 !passwordEncoder.matches(userRequestDto.getPassword(), userDetails.getPassword())) {
-            throw new WrongPhoneNumberOrPassword();
+            throw new WrongPhoneNumberOrPasswordException();
         }
 
         UsernamePasswordAuthenticationToken authenticationToken
@@ -49,11 +45,11 @@ public class LoginServiceImpl implements LoginService {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         String token = jwtTokenUtil.generateToken((UserEntity) userDetails);
-        Map<String, String> map = new HashMap<>();
-        map.put("token", token);
-        map.put("tokenHead", TOKEN_HEADER);
 
-        return Result.success(SUCCESSFUL_MESSAGE, map.toString());
+        Map<String, String> tokenInfoMap = new HashMap<>();
+        tokenInfoMap.put("token", token);
+        tokenInfoMap.put("tokenHead", TOKEN_HEADER);
 
+        return tokenInfoMap.toString();
     }
 }

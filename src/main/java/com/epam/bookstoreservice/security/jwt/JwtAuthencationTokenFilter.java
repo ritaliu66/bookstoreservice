@@ -40,17 +40,15 @@ public class JwtAuthencationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = httpServletRequest.getHeader(tokenHeader);
-        //There is a token
+
         if (Objects.nonNull(authHeader) && authHeader.startsWith(tokenHead)) {
             String authToken = authHeader.substring(tokenHead.length());
             String phoneNumberFromToken = jwtTokenUtil.getPhoneNumberFromToken(authToken);
 
-            //The token has a user name but is not logged in
             if (Objects.nonNull(phoneNumberFromToken) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
                 //login
                 UserDetails userDetails = userDetailsService.loadUserByUsername(phoneNumberFromToken);
 
-                //Check whether the token is valid and reset the user object parameters
                 if (Boolean.TRUE.equals(jwtTokenUtil.validateToken(authToken, (UserEntity) userDetails))) {
                     UsernamePasswordAuthenticationToken authenticationToken
                             = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

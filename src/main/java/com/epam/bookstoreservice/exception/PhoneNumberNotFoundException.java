@@ -1,9 +1,13 @@
 package com.epam.bookstoreservice.exception;
 
-import com.epam.bookstoreservice.exception.errorcode.MyErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * custom exception for phone number can not be found
+ */
 @Getter
 @Setter
 public class PhoneNumberNotFoundException extends RuntimeException {
@@ -13,7 +17,7 @@ public class PhoneNumberNotFoundException extends RuntimeException {
 
     public PhoneNumberNotFoundException() {
         super();
-        this.errorCode = MyErrorCode.PHONE_NUMBER_NOT_FOUND;
+        this.errorCode = HttpServletResponse.SC_NOT_FOUND;
         this.errorMsg = "This phone number can not be found";
     }
 }

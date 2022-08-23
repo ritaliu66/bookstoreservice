@@ -5,17 +5,15 @@ import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
 import com.epam.bookstoreservice.entity.UserEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
+/**
+ * mapper for UserDTO and UserEntity
+ */
 @Mapper(componentModel = "spring")
-public interface UserDtoToUserEntityMapper {
+public interface UserDtoAndUserEntityMapper {
 
-    @Mapping(target = "username", source = "username")
-    @Mapping(target = "password", source = "password")
-    @Mapping(target = "phoneNumber", source = "phoneNumber")
     UserEntity requestDtoToEntity(UserRequestDTO userRequestDto);
 
-    @Mapping(target = "username", source = "username")
-    @Mapping(target = "phoneNumber", source = "phoneNumber")
     UserResponseDTO entityToResponseDto(UserEntity userEntity);
+
 }

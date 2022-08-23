@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * the com.epam.bookstoreservice.controller for user service
+ * the controller for user service
  */
 @RestController
 @RequestMapping("/v1/user")
@@ -25,10 +25,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    private static final String SUCCESSFUL_MESSAGE = "successful";
+
     @PostMapping("/register")
     @ApiOperation("user register")
     public ResponseEntity<Result<UserResponseDTO>> register(UserRequestDTO userRequestDto){
-        return ResponseEntity.ok(userService.register(userRequestDto));
+        return ResponseEntity.ok(Result.success(SUCCESSFUL_MESSAGE,userService.register(userRequestDto)));
     }
 
 }

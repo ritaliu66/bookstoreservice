@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
+/**
+ * controller for bookstore
+ */
 @RestController
 @RequestMapping("/v1/bookstore")
 @AllArgsConstructor
@@ -31,13 +33,15 @@ public class BookStoreController {
 
     private final BookstoreService bookstoreService;
 
+    private static final String SUCCESSFUL_MESSAGE = "successful";
+
     @PostMapping("/add-new-book")
     @ApiOperation("add new book")
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<BookResponseDTO>> addNewBook(BookRequestDTO book) {
 
-        Result<BookResponseDTO> result = bookstoreService.addNewBook(book);
-        return ResponseEntity.ok(result);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.addNewBook(book)));
     }
 
 
@@ -45,8 +49,9 @@ public class BookStoreController {
     @ApiOperation("add existed book")
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<BookResponseDTO>> addBook(BookRequestDTO book) {
-        Result<BookResponseDTO> result = bookstoreService.addBook(book);
-        return ResponseEntity.ok(result);
+
+        return ResponseEntity.
+                ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.addBook(book)));
     }
 
     @GetMapping("/book/{id}")
@@ -54,8 +59,8 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<BookResponseDTO>> getBookById(@PathVariable Integer id) {
 
-        Result<BookResponseDTO> bookById = bookstoreService.getBookById(id);
-        return ResponseEntity.ok(bookById);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE, bookstoreService.getBookById(id)));
     }
 
     @GetMapping("/book-list")
@@ -63,8 +68,8 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<List<BookResponseDTO>>> getAllBooks() {
 
-        Result<List<BookResponseDTO>> allBooks = bookstoreService.getAllBooks();
-        return ResponseEntity.ok(allBooks);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getAllBooks()));
     }
 
 
@@ -72,9 +77,9 @@ public class BookStoreController {
     @ApiOperation("get number of books available by id")
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<Integer>> getNumberOfBooksAvailableById(@PathVariable Integer id) {
-        Result<Integer> numberOfBooksAvailableById =
-                bookstoreService.getNumberOfBooksAvailableById(id);
-        return ResponseEntity.ok(numberOfBooksAvailableById);
+
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getNumberOfBooksAvailableById(id)));
     }
 
     @PostMapping("/sell-book/{id}")
@@ -82,8 +87,8 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<BookResponseDTO>> sellABook(@PathVariable Integer id) {
 
-        Result<BookResponseDTO> result = bookstoreService.sellABook(id);
-        return ResponseEntity.ok(result);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.sellABook(id)));
     }
 
     @PostMapping("/sell-books")
@@ -91,9 +96,8 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<List<BookResponseDTO>>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
 
-        Result<List<BookResponseDTO>> listResult =
-                bookstoreService.sellListOfBooks(sellDTOList);
-        return ResponseEntity.ok(listResult);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.sellListOfBooks(sellDTOList)));
     }
 
     @PutMapping("/update-book/{id}")
@@ -101,9 +105,8 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<BookResponseDTO>> updateABook(@PathVariable Integer id, BookRequestDTO book) {
 
-        Result<BookResponseDTO> result =
-                bookstoreService.updateABook(id, book);
-        return ResponseEntity.ok(result);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE, bookstoreService.updateABook(id, book)));
     }
 
     @GetMapping("/books")
@@ -111,9 +114,8 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<List<BookResponseDTO>>> getBooksByCategoryAndKeyWord(String category, String keyword) {
 
-        Result<List<BookResponseDTO>> booksByCategoryAndKeyWord =
-                bookstoreService.getBooksByCategoryAndKeyWord(category, keyword);
-        return ResponseEntity.ok(booksByCategoryAndKeyWord);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getBooksByCategoryAndKeyWord(category, keyword)));
     }
 
     @GetMapping("/number-of-books")
@@ -121,8 +123,7 @@ public class BookStoreController {
     @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
     public ResponseEntity<Result<Integer>> getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
 
-        Result<Integer> numberOfBooksSoldPerCategoryAndKeyword =
-                bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword);
-        return ResponseEntity.ok(numberOfBooksSoldPerCategoryAndKeyword);
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)));
     }
 }

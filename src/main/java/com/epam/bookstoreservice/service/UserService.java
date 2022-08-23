@@ -1,7 +1,6 @@
 package com.epam.bookstoreservice.service;
 
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
-import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
 
 /**
@@ -15,5 +14,5 @@ public interface UserService {
      * @param userEntity
      * @return
      */
-    Result<UserResponseDTO> register(UserRequestDTO userEntity);
+   UserResponseDTO register(UserRequestDTO userEntity);
 }

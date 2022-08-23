@@ -14,6 +14,9 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * unit test for login controller
+ */
 @SpringBootTest(classes = BookstoreServiceApplication.class)
 class LoginControllerTest {
 
@@ -25,13 +28,11 @@ class LoginControllerTest {
 
     private final static String USERNAME = "2";
 
-    private final static String CORRECT_PASSWORD = "2";
+    private final static String PASSWORD = "2";
 
     private final static String PHONE_NUMBER = "111";
 
     private final static String TOKEN = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjEsImNyZWF0ZWQiOjE2NjA2Mjc0MTI3MDQsImV4cCI6MTY2MTIzMjIxMn0.fJXfBpXSLnFMOjewMnPjZNMmpNLeNJ97w7kj3EQWhp45HrWZt-H8-emayKjYkZ3AtPUUYZ1PSJlRML0mGBsI3w";
-
-    private static final String SUCCESSFUL_MESSAGE = "successful";
 
     @BeforeEach
     public void init() {
@@ -39,13 +40,13 @@ class LoginControllerTest {
     }
 
     @Test
-    void loginWhenUseCorrectUsernameAndPassword() {
+    void loginAndReturnTokenWhenUseCorrectUsernameAndPassword() {
 
-        UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, CORRECT_PASSWORD, PHONE_NUMBER);
+        UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, PASSWORD, PHONE_NUMBER);
 
-        Mockito.when(loginService.loginAndReturnToken(userRequestDto)).thenReturn(Result.success(SUCCESSFUL_MESSAGE, TOKEN));
+        Mockito.when(loginService.loginAndReturnToken(userRequestDto)).thenReturn(TOKEN);
 
-        ResponseEntity<Result<String>> token = loginController.login(userRequestDto);
+        ResponseEntity<Result<String>> token = loginController.loginAndReturnToken(userRequestDto);
 
         Assertions.assertNotNull(token.getBody().getData());
     }

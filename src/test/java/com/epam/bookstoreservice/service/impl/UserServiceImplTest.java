@@ -3,10 +3,8 @@ package com.epam.bookstoreservice.service.impl;
 import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dao.UserDao;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
-import com.epam.bookstoreservice.dto.response.Result;
-import com.epam.bookstoreservice.dto.response.UserResponseDTO;
 import com.epam.bookstoreservice.entity.UserEntity;
-import com.epam.bookstoreservice.mapper.UserDtoToUserEntityMapper;
+import com.epam.bookstoreservice.mapper.UserDtoAndUserEntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.mockito.ArgumentMatchers.any;
 
+/**
+ * unit test for user service
+ */
 @SpringBootTest(classes = BookstoreServiceApplication.class)
 class UserServiceImplTest {
 
@@ -39,8 +40,8 @@ class UserServiceImplTest {
 
     private final static Integer ID = 1;
 
-    private final UserDtoToUserEntityMapper userDtoToUserEntityMapper = Mappers.getMapper(
-            UserDtoToUserEntityMapper.class);
+    private final UserDtoAndUserEntityMapper userDtoToUserEntityMapper = Mappers.getMapper(
+            UserDtoAndUserEntityMapper.class);
 
     @BeforeEach
     public void init() {
@@ -56,8 +57,6 @@ class UserServiceImplTest {
 
         Mockito.when(userDao.save(any())).thenReturn(userEntity);
 
-        Result<UserResponseDTO> registerResult = userService.register(userRequestDto);
-
-        Assertions.assertNotNull(registerResult.getData());
+        Assertions.assertNotNull(userService.register(userRequestDto));
     }
 }

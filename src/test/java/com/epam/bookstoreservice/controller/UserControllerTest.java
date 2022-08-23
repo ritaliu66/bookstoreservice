@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 
 import static org.mockito.ArgumentMatchers.any;
 
+/**
+ * unit test for user controller
+ */
 @SpringBootTest(classes = BookstoreServiceApplication.class)
 class UserControllerTest {
 
@@ -31,8 +34,6 @@ class UserControllerTest {
 
     private final static String PHONE_NUMBER = "111";
 
-    private static final String SUCCESSFUL_MESSAGE = "successful";
-
     @BeforeEach
     public void init() {
         userController = new UserController(userService);
@@ -43,7 +44,7 @@ class UserControllerTest {
         UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, PASSWORD, PHONE_NUMBER);
         UserResponseDTO userResponseDTO = new UserResponseDTO(USERNAME, PHONE_NUMBER);
 
-        Mockito.when(userService.register(any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, userResponseDTO));
+        Mockito.when(userService.register(any())).thenReturn( userResponseDTO);
 
         ResponseEntity<Result<UserResponseDTO>> result = userController.register(userRequestDto);
         Assertions.assertNotNull(result.getBody().getData());

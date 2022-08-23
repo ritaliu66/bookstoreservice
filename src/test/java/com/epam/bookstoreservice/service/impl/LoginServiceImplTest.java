@@ -1,9 +1,8 @@
 package com.epam.bookstoreservice.service.impl;
 
 import com.epam.bookstoreservice.BookstoreServiceApplication;
-import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.entity.UserEntity;
-import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPassword;
+import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPasswordException;
 import com.epam.bookstoreservice.security.jwt.JwtTokenUtil;
 import com.epam.bookstoreservice.security.userdetailsservice.UserDetailsServiceImpl;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
@@ -17,7 +16,9 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
+/**
+ * unit test for login service
+ */
 @SpringBootTest(classes = BookstoreServiceApplication.class)
 class LoginServiceImplTest {
 
@@ -59,9 +60,7 @@ class LoginServiceImplTest {
 
         Mockito.when(passwordEncoder.matches(userRequestDto.getPassword(), userEntity.getPassword())).thenReturn(true);
 
-        Result<String> token = loginService.loginAndReturnToken(userRequestDto);
-
-        Assertions.assertNotNull(token.getData());
+        Assertions.assertNotNull(loginService.loginAndReturnToken(userRequestDto));
     }
 
     @Test
@@ -74,7 +73,7 @@ class LoginServiceImplTest {
             Mockito.when(userDetailsService.loadUserByUsername(PHONE_NUMBER)).thenReturn(userEntity);
             UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, INCORRECT_PASSWORD, PHONE_NUMBER);
             loginService.loginAndReturnToken(userRequestDto);
-        } catch (WrongPhoneNumberOrPassword ex) {
+        } catch (WrongPhoneNumberOrPasswordException ex) {
             Assert.assertEquals("login failed, wrong user name or password", ex.getErrorMsg());
         }
 
@@ -87,7 +86,7 @@ class LoginServiceImplTest {
         try {
             loginService.loginAndReturnToken(userEntity);
             Assert.fail("Expected a WrongPhoneNumberOrPassword to be thrown");
-        } catch (WrongPhoneNumberOrPassword ex) {
+        } catch (WrongPhoneNumberOrPasswordException ex) {
             Assert.assertEquals("login failed, wrong user name or password", ex.getErrorMsg());
         }
 

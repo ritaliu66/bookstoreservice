@@ -21,6 +21,9 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 
+/**
+ * unit test for bookstore controller
+ */
 @SpringBootTest(classes = BookstoreServiceApplication.class)
 class BookStoreControllerTest {
 
@@ -51,9 +54,8 @@ class BookStoreControllerTest {
 
     private static final SellDTO SELL_DTO = new SellDTO(1, 2);
 
-    private static final String SUCCESSFUL_MESSAGE = "successful";
 
-    private static final String AUTHOR="Jane";
+    private static final String AUTHOR = "Jane";
 
     @BeforeEach
     public void initController() {
@@ -63,11 +65,11 @@ class BookStoreControllerTest {
     @Test
     void addNewBook() {
         Mockito.when(bookstoreService.addNewBook(any()))
-                .thenReturn(Result.success(SUCCESSFUL_MESSAGE, NONEXISTENT_BOOK_RESPONSE_DTO));
+                .thenReturn(NONEXISTENT_BOOK_RESPONSE_DTO);
 
         ResponseEntity<Result<BookResponseDTO>> result = bookStoreController.addNewBook(BOOK_REQUEST_DTO);
 
-        BookResponseDTO resultData = (BookResponseDTO) result.getBody().getData();
+        BookResponseDTO resultData = result.getBody().getData();
 
         Assertions.assertEquals(AUTHOR, resultData.getAuthor());
 
@@ -76,7 +78,7 @@ class BookStoreControllerTest {
     @Test
     void addBook() {
         Mockito.when(bookstoreService.addBook(any()))
-                .thenReturn(Result.success(SUCCESSFUL_MESSAGE, EXISTENT_BOOK_RESPONSE_DTO));
+                .thenReturn(EXISTENT_BOOK_RESPONSE_DTO);
 
         ResponseEntity<Result<BookResponseDTO>> result = bookStoreController.addBook(BOOK_REQUEST_DTO);
         Assertions.assertNotNull(result.getBody().getData());
@@ -84,7 +86,7 @@ class BookStoreControllerTest {
 
     @Test
     void getBookById() {
-        Mockito.when(bookstoreService.getBookById(any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, EXISTENT_BOOK_RESPONSE_DTO));
+        Mockito.when(bookstoreService.getBookById(any())).thenReturn(EXISTENT_BOOK_RESPONSE_DTO);
         ResponseEntity<Result<BookResponseDTO>> bookById = bookStoreController.getBookById(ID);
         Assertions.assertNotNull(bookById.getBody().getData());
     }
@@ -94,9 +96,9 @@ class BookStoreControllerTest {
     void getAllBooks() {
         List<BookResponseDTO> bookEntityList = new ArrayList<>();
         bookEntityList.add(EXISTENT_BOOK_RESPONSE_DTO);
-        Mockito.when(bookstoreService.getAllBooks()).thenReturn(Result.success(SUCCESSFUL_MESSAGE, bookEntityList));
+        Mockito.when(bookstoreService.getAllBooks()).thenReturn(bookEntityList);
         ResponseEntity<Result<List<BookResponseDTO>>> result = bookStoreController.getAllBooks();
-        List<BookResponseDTO> allBooks = (List<BookResponseDTO>) result.getBody().getData();
+        List<BookResponseDTO> allBooks = result.getBody().getData();
         Assertions.assertTrue(!allBooks.isEmpty());
 
     }
@@ -104,7 +106,7 @@ class BookStoreControllerTest {
     @Test
     void getNumberOfBooksAvailableByIdSuccessfully() {
 
-        Mockito.when(bookstoreService.getNumberOfBooksAvailableById(any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, 11));
+        Mockito.when(bookstoreService.getNumberOfBooksAvailableById(any())).thenReturn(11);
         ResponseEntity<Result<Integer>> result = bookStoreController.getNumberOfBooksAvailableById(ID);
         Assertions.assertNotNull(result.getBody().getData());
     }
@@ -112,7 +114,7 @@ class BookStoreControllerTest {
 
     @Test
     void sellABookSuccessfully() {
-        Mockito.when(bookstoreService.sellABook(any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, EXISTENT_BOOK_RESPONSE_DTO));
+        Mockito.when(bookstoreService.sellABook(any())).thenReturn(EXISTENT_BOOK_RESPONSE_DTO);
         ResponseEntity<Result<BookResponseDTO>> result = bookStoreController.sellABook(ID);
         Assertions.assertNotNull(result.getBody().getData());
     }
@@ -125,9 +127,9 @@ class BookStoreControllerTest {
         List<SellDTO> sellDTOList = new ArrayList<>();
         sellDTOList.add(SELL_DTO);
 
-        Mockito.when(bookstoreService.sellListOfBooks(any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, BOOK_ENTITY_LIST));
+        Mockito.when(bookstoreService.sellListOfBooks(any())).thenReturn(BOOK_ENTITY_LIST);
         ResponseEntity<Result<List<BookResponseDTO>>> result = bookStoreController.sellListOfBooks(sellDTOList);
-        List<BookResponseDTO> bookResponseDTOList = (List<BookResponseDTO>) result.getBody().getData();
+        List<BookResponseDTO> bookResponseDTOList = result.getBody().getData();
         Assertions.assertTrue(!bookResponseDTOList.isEmpty());
     }
 
@@ -135,9 +137,9 @@ class BookStoreControllerTest {
     @Test
     void updateABook() {
 
-        Mockito.when(bookstoreService.updateABook(any(), any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, UPDATE_BOOK_RESPONSE_DTO));
+        Mockito.when(bookstoreService.updateABook(any(), any())).thenReturn(UPDATE_BOOK_RESPONSE_DTO);
         ResponseEntity<Result<BookResponseDTO>> result = bookStoreController.updateABook(ID, UPDATE_BOOK_REQUEST);
-        BookResponseDTO bookResponseDTO = (BookResponseDTO) result.getBody().getData();
+        BookResponseDTO bookResponseDTO = result.getBody().getData();
         Assertions.assertEquals(NEW_PRICE, bookResponseDTO.getPrice());
 
     }
@@ -148,9 +150,9 @@ class BookStoreControllerTest {
         List<BookResponseDTO> bookEntityList = new ArrayList<>();
         bookEntityList.add(EXISTENT_BOOK_RESPONSE_DTO);
 
-        Mockito.when(bookstoreService.getBooksByCategoryAndKeyWord(any(), any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, bookEntityList));
+        Mockito.when(bookstoreService.getBooksByCategoryAndKeyWord(any(), any())).thenReturn(bookEntityList);
         ResponseEntity<Result<List<BookResponseDTO>>> result = bookStoreController.getBooksByCategoryAndKeyWord("literary works", "1");
-        List<BookResponseDTO> booksByCategoryAndKeyWord = (List<BookResponseDTO>) result.getBody().getData();
+        List<BookResponseDTO> booksByCategoryAndKeyWord = result.getBody().getData();
         Assertions.assertTrue(!booksByCategoryAndKeyWord.isEmpty());
     }
 
@@ -158,9 +160,9 @@ class BookStoreControllerTest {
     @Test
     void getNumberOfBooksSoldPerCategoryAndKeywordSuccessfully() {
 
-        Mockito.when(bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(any(), any())).thenReturn(Result.success(SUCCESSFUL_MESSAGE, 1000));
+        Mockito.when(bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(any(), any())).thenReturn(1000);
         ResponseEntity<Result<Integer>> result = bookStoreController.getNumberOfBooksSoldPerCategoryAndKeyword("literary works", "1");
-        Integer numberOfBooksSoldPerCategoryAndKeyword = (Integer) result.getBody().getData();
+        Integer numberOfBooksSoldPerCategoryAndKeyword = result.getBody().getData();
         Assertions.assertNotNull(numberOfBooksSoldPerCategoryAndKeyword);
     }
 

@@ -1,12 +1,18 @@
 package com.epam.bookstoreservice.exception;
 
 
-import com.epam.bookstoreservice.exception.errorcode.MyErrorCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * custom exception for book can not be found
+ */
 @Getter
 @Setter
+@ToString
 public class BookNotFoundException extends RuntimeException {
     private final Integer errorCode;
 
@@ -14,7 +20,7 @@ public class BookNotFoundException extends RuntimeException {
 
     public BookNotFoundException() {
         super();
-        this.errorCode = MyErrorCode.BOOK_NOT_FOUND;
-        this.errorMsg = "This book is not available in the bookstore";
+        this.errorCode = HttpServletResponse.SC_NOT_FOUND;
+        this.errorMsg = "This book can not be found in the bookstore";
     }
 }

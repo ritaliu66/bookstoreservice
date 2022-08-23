@@ -71,5 +71,4 @@ public class Result<T> {
         return new Result<>(errorCode, message, null);
     }
 
-
 }

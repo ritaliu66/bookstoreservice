@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 
 /**
- * the dao for user
+ * dao for sys_user
  */
 @Repository
 public interface UserDao extends JpaRepository<UserEntity,Integer> {

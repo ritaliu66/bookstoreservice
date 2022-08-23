@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * the com.epam.bookstoreservice.controller for login
+ * the controller for login
  */
 @RestController
 @RequestMapping("/v1/login")
@@ -24,12 +24,13 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+    private static final String SUCCESSFUL_MESSAGE = "successful";
+
     @PostMapping("/token")
     @ApiOperation(value = "get a token")
-    public ResponseEntity<Result<String>> login(UserRequestDTO userRequestDto) {
+    public ResponseEntity<Result<String>> loginAndReturnToken(UserRequestDTO userRequestDto) {
 
-        Result<String> token = loginService.loginAndReturnToken(userRequestDto);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(Result.success(SUCCESSFUL_MESSAGE,loginService.loginAndReturnToken(userRequestDto)));
     }
 
 }
