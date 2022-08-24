@@ -26,6 +26,6 @@ public class RestAuthorizationEntryPoint implements AuthenticationEntryPoint {
         httpServletResponse.setCharacterEncoding("UTF-8");
         httpServletResponse.setContentType("application/json");
         httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN
-                , Result.error(HttpServletResponse.SC_FORBIDDEN,"Insufficient permissions, please contact the administrator").toString());
+                , Result.error("Insufficient permissions, please contact the administrator").toString());
     }
 }

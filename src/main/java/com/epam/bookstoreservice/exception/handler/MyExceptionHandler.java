@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Exception for custom exception
  */
@@ -25,7 +23,7 @@ public class MyExceptionHandler {
             PhoneNumberNotFoundException.class
     })
     public ResponseEntity<Result<String>> handleNotFoundException(Throwable throwable) {
-        return handlerException(throwable,HttpStatus.NOT_FOUND,HttpServletResponse.SC_NOT_FOUND);
+        return handlerException(throwable,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
@@ -35,12 +33,12 @@ public class MyExceptionHandler {
 
     })
     public ResponseEntity<Result<String>> handleBadRequestException(Throwable throwable) {
-        return handlerException(throwable,HttpStatus.BAD_REQUEST,HttpServletResponse.SC_BAD_REQUEST);
+        return handlerException(throwable,HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<Result<String>> handlerException(Throwable throwable, HttpStatus status, Integer errorCode){
+    private ResponseEntity<Result<String>> handlerException(Throwable throwable, HttpStatus status){
         return ResponseEntity.status(status)
-                .contentType(MediaType.APPLICATION_JSON).body(Result.error(errorCode,throwable.toString()));
+                .contentType(MediaType.APPLICATION_JSON).body(Result.error(throwable.toString()));
     }
 
 }

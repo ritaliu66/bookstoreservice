@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookstoreServiceImpl implements BookstoreService {
 
-    private final BookDtoAndBookEntityMapper bookRequestDtoToBookEntity;
+    private final BookDtoAndBookEntityMapper bookDtoAndBookEntityMapper;
 
     private final BookDao bookDao;
 
@@ -36,8 +36,8 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Override
     public BookResponseDTO addNewBook(BookRequestDTO bookRequestDTO) {
-        return bookRequestDtoToBookEntity
-                .entityToResponseDto(bookDao.save(bookRequestDtoToBookEntity.requestDtoToEntity(bookRequestDTO)));
+        return bookDtoAndBookEntityMapper
+                .entityToResponseDto(bookDao.save(bookDtoAndBookEntityMapper.requestDtoToEntity(bookRequestDTO)));
     }
 
     @Override
@@ -47,14 +47,14 @@ public class BookstoreServiceImpl implements BookstoreService {
         Integer totalCount = bookRequestDTO.getTotalCount() + bookEntityFindByTitle.getTotalCount();
         bookEntityFindByTitle.setTotalCount(totalCount);
 
-        return bookRequestDtoToBookEntity.entityToResponseDto(bookDao.save(bookEntityFindByTitle));
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindByTitle));
     }
 
     @Override
     public BookResponseDTO getBookById(Integer id) {
         Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
 
-        return bookRequestDtoToBookEntity
+        return bookDtoAndBookEntityMapper
                 .entityToResponseDto(bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new));
     }
 
@@ -64,7 +64,7 @@ public class BookstoreServiceImpl implements BookstoreService {
 
         return allBookEntityList
                 .stream()
-                .map(bookRequestDtoToBookEntity::entityToResponseDto).collect(Collectors.toList());
+                .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BookstoreServiceImpl implements BookstoreService {
         bookEntityFindById.setSold(bookEntityFindById.getSold() + 1);
         bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - 1);
 
-        return bookRequestDtoToBookEntity.entityToResponseDto(bookDao.save(bookEntityFindById));
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
 
 
     }
@@ -115,7 +115,7 @@ public class BookstoreServiceImpl implements BookstoreService {
                 .map(bookEntity -> {
                     bookEntity.setSold(bookEntity.getSold() + sellDtoMap.get(bookEntity.getId()));
                     bookEntity.setTotalCount(bookEntity.getTotalCount() - sellDtoMap.get(bookEntity.getId()));
-                    return bookRequestDtoToBookEntity.entityToResponseDto(bookDao.save(bookEntity));
+                    return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntity));
                 }).collect(Collectors.toList());
 
     }
@@ -132,8 +132,8 @@ public class BookstoreServiceImpl implements BookstoreService {
             throw new BookNotFoundException();
         }
 
-        return bookRequestDtoToBookEntity
-                .entityToResponseDto(bookDao.save(bookRequestDtoToBookEntity.requestDtoToEntity(bookRequestDTO)));
+        return bookDtoAndBookEntityMapper
+                .entityToResponseDto(bookDao.save(bookDtoAndBookEntityMapper.requestDtoToEntity(bookRequestDTO)));
     }
 
     @Override
@@ -166,7 +166,7 @@ public class BookstoreServiceImpl implements BookstoreService {
 
         return bookEntityListFindByCategoryAndKeyword
                 .stream()
-                .map(bookRequestDtoToBookEntity::entityToResponseDto).collect(Collectors.toList());
+                .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
 }
 

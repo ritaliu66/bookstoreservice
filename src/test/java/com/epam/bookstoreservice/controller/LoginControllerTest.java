@@ -4,6 +4,7 @@ import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.Result;
 ;
+import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
 import com.epam.bookstoreservice.service.impl.LoginServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ class LoginControllerTest {
 
     private final static String PHONE_NUMBER = "111";
 
-    private final static String TOKEN = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjEsImNyZWF0ZWQiOjE2NjA2Mjc0MTI3MDQsImV4cCI6MTY2MTIzMjIxMn0.fJXfBpXSLnFMOjewMnPjZNMmpNLeNJ97w7kj3EQWhp45HrWZt-H8-emayKjYkZ3AtPUUYZ1PSJlRML0mGBsI3w";
+    private final static TokenResponseDTO  TOKEN = new TokenResponseDTO("Bearer ","token");
 
     @BeforeEach
     public void init() {
@@ -46,7 +47,7 @@ class LoginControllerTest {
 
         Mockito.when(loginService.loginAndReturnToken(userRequestDto)).thenReturn(TOKEN);
 
-        ResponseEntity<Result<String>> token = loginController.loginAndReturnToken(userRequestDto);
+        ResponseEntity<Result<TokenResponseDTO>> token = loginController.loginAndReturnToken(userRequestDto);
 
         Assertions.assertNotNull(token.getBody().getData());
     }

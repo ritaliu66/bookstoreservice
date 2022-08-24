@@ -8,17 +8,13 @@ import lombok.Setter;
 @Setter
 public class Result<T> {
 
-    @ApiModelProperty(notes = "status code returned")
-    private Integer code;
-
     @ApiModelProperty(notes = "status information returned")
     private String message;
 
     @ApiModelProperty(notes = "data returned")
     private T data;
 
-    private Result(Integer code, String message, T data) {
-        this.code = code;
+    private Result(String message, T data) {
         this.message = message;
         this.data = data;
     }
@@ -30,7 +26,7 @@ public class Result<T> {
      * @return
      */
     public static <T> Result<T> success(String message) {
-        return new Result<>(200, message, null);
+        return new Result<>(message, null);
     }
 
     /**
@@ -40,7 +36,7 @@ public class Result<T> {
      * @return
      */
     public static <T> Result<T> success(String message, T data) {
-        return new Result<>(200, message, data);
+        return new Result<>(message, data);
     }
 
     /**
@@ -50,7 +46,7 @@ public class Result<T> {
      * @return
      */
     public static <T> Result<T> error(String message) {
-        return new Result<>(500, message, null);
+        return new Result<>(message, null);
     }
 
     /**
@@ -60,15 +56,8 @@ public class Result<T> {
      * @return
      */
     public static <T> Result<T> error(String message, T data) {
-        return new Result<>(500, message, data);
+        return new Result<>(message, data);
     }
 
-    public static  <T> Result<T> error(Integer errorCode, String message, T data) {
-        return new Result<>(errorCode, message, data);
-    }
-
-    public static  <T> Result<T> error(Integer errorCode, String message) {
-        return new Result<>(errorCode, message, null);
-    }
 
 }

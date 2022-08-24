@@ -24,7 +24,7 @@ public class RestfulAccessDeniedHandler implements AccessDeniedHandler {
         httpServletResponse.setCharacterEncoding("UTF-8");
         httpServletResponse.setContentType("application/json");
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED
-                , Result.error(HttpServletResponse.SC_UNAUTHORIZED,"Not logged in. Please log in").toString());
+                , Result.error("Not logged in. Please log in").toString());
 
     }
 }

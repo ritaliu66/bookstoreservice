@@ -1,5 +1,6 @@
 package com.epam.bookstoreservice.service.impl;
 
+import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
 import com.epam.bookstoreservice.entity.UserEntity;
 import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPasswordException;
 import com.epam.bookstoreservice.security.jwt.JwtTokenUtil;
@@ -13,8 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Objects;
 
 /**
@@ -33,7 +33,7 @@ public class LoginServiceImpl implements LoginService {
     private static final String TOKEN_HEADER = "Bearer";
 
     @Override
-    public String loginAndReturnToken(UserRequestDTO userRequestDto) {
+    public TokenResponseDTO loginAndReturnToken(UserRequestDTO userRequestDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userRequestDto.getPhoneNumber());
         if (Objects.isNull(userDetails) ||
                 !passwordEncoder.matches(userRequestDto.getPassword(), userDetails.getPassword())) {
@@ -46,10 +46,6 @@ public class LoginServiceImpl implements LoginService {
 
         String token = jwtTokenUtil.generateToken((UserEntity) userDetails);
 
-        Map<String, String> tokenInfoMap = new HashMap<>();
-        tokenInfoMap.put("token", token);
-        tokenInfoMap.put("tokenHead", TOKEN_HEADER);
-
-        return tokenInfoMap.toString();
+        return new TokenResponseDTO(TOKEN_HEADER,token);
     }
 }

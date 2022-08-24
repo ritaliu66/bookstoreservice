@@ -2,6 +2,7 @@ package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.Result;
+import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
 import com.epam.bookstoreservice.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +29,7 @@ public class LoginController {
 
     @PostMapping("/token")
     @ApiOperation(value = "get a token")
-    public ResponseEntity<Result<String>> loginAndReturnToken(UserRequestDTO userRequestDto) {
+    public ResponseEntity<Result<TokenResponseDTO>> loginAndReturnToken(UserRequestDTO userRequestDto) {
 
         return ResponseEntity.ok(Result.success(SUCCESSFUL_MESSAGE,loginService.loginAndReturnToken(userRequestDto)));
     }
