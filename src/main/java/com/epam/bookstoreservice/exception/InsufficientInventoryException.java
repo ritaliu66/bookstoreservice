@@ -1,21 +1,25 @@
 package com.epam.bookstoreservice.exception;
 
 
-import com.epam.bookstoreservice.exception.errorcode.MyErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *  custom exception for insufficient inventory
+ */
 @Getter
 @Setter
 public class InsufficientInventoryException extends RuntimeException {
 
-    private Integer errorCode;
+    private final Integer errorCode;
 
-    private String errorMsg;
+    private final String errorMsg;
 
     public InsufficientInventoryException() {
         super();
-        this.errorCode = MyErrorCode.INSUFFICIENT_INVENTORY;
+        this.errorCode = HttpServletResponse.SC_BAD_REQUEST;
         this.errorMsg = "This book is out of stock";
     }
 }

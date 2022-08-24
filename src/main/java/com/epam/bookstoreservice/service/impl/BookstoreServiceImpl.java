@@ -1,20 +1,21 @@
 package com.epam.bookstoreservice.service.impl;
 
 import com.epam.bookstoreservice.dao.BookDao;
-import com.epam.bookstoreservice.dto.request.BookRequestDto;
-import com.epam.bookstoreservice.dto.request.SellDto;
-import com.epam.bookstoreservice.dto.response.BookResponseDto;
+import com.epam.bookstoreservice.dto.request.BookRequestDTO;
+import com.epam.bookstoreservice.dto.request.SellDTO;
+import com.epam.bookstoreservice.dto.response.BookResponseDTO;
 import com.epam.bookstoreservice.entity.BookEntity;
 import com.epam.bookstoreservice.exception.InsufficientInventoryException;
-import com.epam.bookstoreservice.exception.NoSuchBookException;
+import com.epam.bookstoreservice.exception.BookNotFoundException;
 import com.epam.bookstoreservice.exception.UnmatchedIdException;
-import com.epam.bookstoreservice.mapper.BookDtoToBookEntityMapper;
+import com.epam.bookstoreservice.mapper.BookDtoAndBookEntityMapper;
 import com.epam.bookstoreservice.service.BookstoreService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,148 +27,146 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookstoreServiceImpl implements BookstoreService {
 
-    private final BookDtoToBookEntityMapper bookRequestDtoToBookEntity;
+    private final BookDtoAndBookEntityMapper bookDtoAndBookEntityMapper;
 
     private final BookDao bookDao;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     @Override
-    public BookResponseDto addNewBook(BookRequestDto book) {
-        BookEntity bookEntity = bookRequestDtoToBookEntity.requestDtoToEntity(book);
-        BookEntity newBookEntity = bookDao.save(bookEntity);
-        return bookRequestDtoToBookEntity.entityToResponseDto(newBookEntity);
+    public BookResponseDTO addNewBook(BookRequestDTO bookRequestDTO) {
+        return bookDtoAndBookEntityMapper
+                .entityToResponseDto(bookDao.save(bookDtoAndBookEntityMapper.requestDtoToEntity(bookRequestDTO)));
     }
 
     @Override
-    public BookResponseDto addBook(BookRequestDto book) {
-        BookEntity bookEntity = bookDao.findByTitle(book.getTitle());
+    public BookResponseDTO addBook(BookRequestDTO bookRequestDTO) {
+        BookEntity bookEntityFindByTitle = bookDao.findByTitle(bookRequestDTO.getTitle());
 
-        Integer totalCount = book.getTotalCount() + bookEntity.getTotalCount();
-        bookEntity.setTotalCount(totalCount);
-        BookEntity result = bookDao.save(bookEntity);
+        Integer totalCount = bookRequestDTO.getTotalCount() + bookEntityFindByTitle.getTotalCount();
+        bookEntityFindByTitle.setTotalCount(totalCount);
 
-        return bookRequestDtoToBookEntity.entityToResponseDto(result);
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindByTitle));
     }
 
     @Override
-    public BookResponseDto getBookById(Integer id) {
-        Optional<BookEntity> bookById = bookDao.findById(id);
-        BookEntity entity = bookById.get();
+    public BookResponseDTO getBookById(Integer id) {
+        Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
 
-        return bookRequestDtoToBookEntity.entityToResponseDto(entity);
+        return bookDtoAndBookEntityMapper
+                .entityToResponseDto(bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new));
     }
 
     @Override
-    public List<BookResponseDto> getAllBooks() {
-        List<BookEntity> allBooks = bookDao.findAll();
-        ArrayList<BookResponseDto> bookResponseDtos = new ArrayList<>();
+    public List<BookResponseDTO> getAllBooks() {
+        List<BookEntity> allBookEntityList = bookDao.findAll();
 
-        allBooks.stream().forEach(bookEntity -> {
-            BookResponseDto bookResponseDto = bookRequestDtoToBookEntity.entityToResponseDto(bookEntity);
-            bookResponseDtos.add(bookResponseDto);
-        });
-
-        return bookResponseDtos;
+        return allBookEntityList
+                .stream()
+                .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
 
     @Override
     public Integer getNumberOfBooksAvailableById(Integer id) {
-        Optional<BookEntity> bookById = bookDao.findById(id);
-        BookEntity bookEntity = bookById.get();
-        return bookEntity.getTotalCount() - bookEntity.getSold();
+        Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
+
+        BookEntity bookEntityFindById = bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new);
+
+        return bookEntityFindById.getTotalCount() - bookEntityFindById.getSold();
     }
 
     @Override
-    public Boolean sellABook(Integer id) {
-        Optional<BookEntity> bookById = bookDao.findById(id);
-        BookEntity bookEntity = bookById.get();
-        if (bookEntity.getTotalCount() - bookEntity.getSold() - 1 < 0) {
+    @Transactional
+    public BookResponseDTO sellABook(Integer id) {
+
+        Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
+
+        BookEntity bookEntityFindById = bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new);
+
+        if (bookEntityFindById.getTotalCount() - bookEntityFindById.getSold() - 1 < 0) {
             throw new InsufficientInventoryException();
         }
 
-        bookEntity.setSold(bookEntity.getSold() + 1);
-        bookDao.save(bookEntity);
-        return true;
+        bookEntityFindById.setSold(bookEntityFindById.getSold() + 1);
+        bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - 1);
+
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
+
+
     }
 
     @Override
-    public Boolean sellListOfBooks(List<SellDto> sellDtoList) {
-        Map<Integer, Integer> sellDtoMap = new HashMap<>();
+    @Transactional
+    public List<BookResponseDTO> sellListOfBooks(List<SellDTO> sellDTOList) {
 
-        sellDtoList.stream().forEach(sellDto -> {
-            sellDtoMap.put(sellDto.getId(), sellDto.getNumber());
-        });
+        Map<Integer, Integer> sellDtoMap = sellDTOList.stream().collect(Collectors.toMap(SellDTO::getId, SellDTO::getSellNumber));
 
-        List<Integer> idList = sellDtoList.stream().map(SellDto::getId).collect(Collectors.toList());
-        List<BookEntity> books = bookDao.findAllById(idList);
+        List<BookEntity> bookEntityListFindById = bookDao
+                .findAllById(sellDTOList.stream().map(SellDTO::getId).collect(Collectors.toList()));
 
-        for (BookEntity book : books) {
+        for (BookEntity book : bookEntityListFindById) {
             if (book.getTotalCount() - book.getSold() - sellDtoMap.get(book.getId()) < 0) {
                 throw new InsufficientInventoryException();
             }
-            book.setSold(book.getSold() + sellDtoMap.get(book.getId()));
-            bookDao.save(book);
         }
 
-        return true;
+        return bookEntityListFindById.stream()
+                .map(bookEntity -> {
+                    bookEntity.setSold(bookEntity.getSold() + sellDtoMap.get(bookEntity.getId()));
+                    bookEntity.setTotalCount(bookEntity.getTotalCount() - sellDtoMap.get(bookEntity.getId()));
+                    return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntity));
+                }).collect(Collectors.toList());
 
     }
 
     @Override
-    public BookResponseDto updateABook(Integer id, BookRequestDto book) {
-        if (Objects.nonNull(book.getId()) && !Objects.equals(id, book.getId())) {
+    public BookResponseDTO updateABook(Integer id, BookRequestDTO bookRequestDTO) {
+        if (Objects.nonNull(bookRequestDTO.getId()) && !Objects.equals(id, bookRequestDTO.getId())) {
             throw new UnmatchedIdException();
         }
 
         Optional<BookEntity> bookById = bookDao.findById(id);
+
         if (bookById.isEmpty()) {
-            throw new NoSuchBookException();
+            throw new BookNotFoundException();
         }
-        BookEntity bookEntity = bookById.get();
-        bookEntity.setTitle(book.getTitle());
-        bookEntity.setAuthor(book.getAuthor());
-        bookEntity.setCategory(book.getCategory());
-        bookEntity.setPrice(book.getPrice());
-        bookEntity.setTotalCount(book.getTotalCount());
-        return bookRequestDtoToBookEntity.entityToResponseDto(bookDao.save(bookEntity));
+
+        return bookDtoAndBookEntityMapper
+                .entityToResponseDto(bookDao.save(bookDtoAndBookEntityMapper.requestDtoToEntity(bookRequestDTO)));
     }
 
     @Override
-    public List<BookResponseDto> getBooksByCategoryAndKeyWord(String category, String keyword) {
+    public List<BookResponseDTO> getBooksByCategoryAndKeyWord(String category, String keyword) {
         return getBooksByCategoryAndKeyWordUtil(category, keyword);
 
     }
 
     @Override
     public Integer getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
-        List<BookResponseDto> booksByCategoryAndKeyWord = getBooksByCategoryAndKeyWordUtil(category, keyword);
-        int totalSold = 0;
-        for (BookResponseDto book : booksByCategoryAndKeyWord) {
-            totalSold += book.getSold();
-        }
-        return totalSold;
+        List<BookResponseDTO> bookEntityListFindByCategoryAndKeyWord = getBooksByCategoryAndKeyWordUtil(category, keyword);
+
+        return bookEntityListFindByCategoryAndKeyWord
+                .stream().mapToInt(BookResponseDTO::getSold).sum();
     }
 
 
-    private List<BookResponseDto> getBooksByCategoryAndKeyWordUtil(String category, String keyword) {
-        Integer bookId = -1;
+    private List<BookResponseDTO> getBooksByCategoryAndKeyWordUtil(String category, String keyword) {
+        int bookId = -1;
         try {
-
-            bookId = Integer.valueOf(keyword);
-
-        } catch (Exception ignored) {
-            
+            bookId = Integer.parseInt(keyword);
+        } catch (Exception ex) {
+            logger.info(ex.getMessage());
         }
-        List<BookEntity> byCategoryAndKeyword = bookDao.findByCategoryAndKeyword(category, bookId, keyword);
+        List<BookEntity> bookEntityListFindByCategoryAndKeyword = bookDao.findByCategoryAndKeyword(category, bookId, keyword);
 
-        if (byCategoryAndKeyword.isEmpty()) {
-            throw new NoSuchBookException();
+        if (bookEntityListFindByCategoryAndKeyword.isEmpty()) {
+            throw new BookNotFoundException();
         }
-        List<BookResponseDto> bookResponseDtoListByAuthorOrTitle = new ArrayList<>();
-        byCategoryAndKeyword.forEach(bookEntity ->
-                bookResponseDtoListByAuthorOrTitle.add(bookRequestDtoToBookEntity.entityToResponseDto(bookEntity))
-        );
-        return bookResponseDtoListByAuthorOrTitle;
+
+        return bookEntityListFindByCategoryAndKeyword
+                .stream()
+                .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
 }
 

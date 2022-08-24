@@ -1,18 +1,20 @@
 package com.epam.bookstoreservice.service.impl;
 
-import com.epam.bookstoreservice.config.jwt.JwtTokenUtil;
-import com.epam.bookstoreservice.config.security.UserDetailsServiceImpl;
-import com.epam.bookstoreservice.dto.request.UserRequestDto;
-import com.epam.bookstoreservice.model.LoginUserDetails;
+import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
+import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPasswordException;
+import com.epam.bookstoreservice.security.jwt.JwtTokenUtil;
+import com.epam.bookstoreservice.security.userdetailsservice.UserDetailsServiceImpl;
+import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.service.LoginService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Objects;
 
 /**
@@ -22,42 +24,28 @@ import java.util.Objects;
 @AllArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
-
     private final UserDetailsServiceImpl userDetailsService;
-
 
     private final PasswordEncoder passwordEncoder;
 
-
     private final JwtTokenUtil jwtTokenUtil;
 
-    private static final String tokenHeader = "Bearer";
+    private static final String TOKEN_HEADER = "Bearer";
 
     @Override
-    public String login(UserRequestDto userRequestDto) {
-        // login
-        LoginUserDetails loginUserDetails = userDetailsService.loadUserByPhoneNumber(userRequestDto.getPhoneNumber());
-        if (Objects.isNull(loginUserDetails) ||
-                !passwordEncoder.matches(userRequestDto.getPassword(), loginUserDetails.getPassword())) {
-            return"failedWrong user name or password";
-
+    public TokenResponseDTO loginAndReturnToken(UserRequestDTO userRequestDto) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userRequestDto.getPhoneNumber());
+        if (Objects.isNull(userDetails) ||
+                !passwordEncoder.matches(userRequestDto.getPassword(), userDetails.getPassword())) {
+            throw new WrongPhoneNumberOrPasswordException();
         }
 
-       //Update the Security logon user object
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(loginUserDetails, null, loginUserDetails.getAuthorities());
+                = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        //generate token
-        String token = jwtTokenUtil.generateToken(loginUserDetails);
+        String token = jwtTokenUtil.generateToken((UserEntity) userDetails);
 
-        Map<String, String> map = new HashMap<>();
-
-        map.put("token", token);
-
-        map.put("tokenHead", tokenHeader);
-
-        return map.toString();
-
+        return new TokenResponseDTO(TOKEN_HEADER,token);
     }
 }

@@ -6,18 +6,19 @@ import lombok.Setter;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * custom exception for unmatched id
+ * custom exception for wrong phone number or password
  */
 @Getter
 @Setter
-public class UnmatchedIdException extends RuntimeException {
+public class WrongPhoneNumberOrPasswordException extends RuntimeException {
+
     private final Integer errorCode;
 
     private final String errorMsg;
 
-    public UnmatchedIdException() {
+    public WrongPhoneNumberOrPasswordException() {
         super();
         this.errorCode = HttpServletResponse.SC_BAD_REQUEST;
-        this.errorMsg = "The id in the BookDTO does not match the path variable id";
+        this.errorMsg = "login failed, wrong user name or password";
     }
 }

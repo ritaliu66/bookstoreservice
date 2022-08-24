@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * dao for tb_Book
+ */
 public interface BookDao extends JpaRepository<BookEntity,Integer> {
 
 
     BookEntity findByTitle(String title);
-
-
-    List<BookEntity> findByCategory(String category);
 
     @Query("select b from BookEntity b where b.category = :category " +
             "and (b.id = :bookId or b.author = :keyword or b.title = :keyword)")

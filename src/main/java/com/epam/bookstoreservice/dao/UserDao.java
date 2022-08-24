@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 
 /**
- * the dao for user
+ * dao for sys_user
  */
 @Repository
 public interface UserDao extends JpaRepository<UserEntity,Integer> {
@@ -14,5 +14,5 @@ public interface UserDao extends JpaRepository<UserEntity,Integer> {
 
     UserEntity findByUsername(String username);
 
-    UserEntity findByPhoneNumber(Integer phoneNumber);
+    UserEntity findByPhoneNumber(String phoneNumber);
 }

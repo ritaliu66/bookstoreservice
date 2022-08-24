@@ -1,11 +1,12 @@
 package com.epam.bookstoreservice.service.impl;
 
 import com.epam.bookstoreservice.BookstoreServiceApplication;
-import com.epam.bookstoreservice.config.jwt.JwtTokenUtil;
-import com.epam.bookstoreservice.config.security.UserDetail;
-import com.epam.bookstoreservice.config.security.UserDetailsServiceImpl;
-import com.epam.bookstoreservice.dto.request.UserRequestDto;
-import com.epam.bookstoreservice.model.LoginUserDetails;
+import com.epam.bookstoreservice.entity.UserEntity;
+import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPasswordException;
+import com.epam.bookstoreservice.security.jwt.JwtTokenUtil;
+import com.epam.bookstoreservice.security.userdetailsservice.UserDetailsServiceImpl;
+import com.epam.bookstoreservice.dto.request.UserRequestDTO;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,9 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
+/**
+ * unit test for login service
+ */
 @SpringBootTest(classes = BookstoreServiceApplication.class)
 class LoginServiceImplTest {
 
@@ -38,53 +41,56 @@ class LoginServiceImplTest {
 
     private final static String INCORRECT_PASSWORD = "4";
 
-    private final static Integer PHONE_NUMBER = 111;
+    private final static String PHONE_NUMBER = "111";
 
     @BeforeEach
-    public void init(){
-        loginService = new LoginServiceImpl(userDetailsService,passwordEncoder,jwtTokenUtil);
+    public void init() {
+        loginService = new LoginServiceImpl(userDetailsService, passwordEncoder, jwtTokenUtil);
     }
 
     @Test
     void loginWhenUseCorrectUsernameAndPassword() {
-        LoginUserDetails loginUserDetails = new LoginUserDetails();
-        loginUserDetails.setUsername(USERNAME);
-        loginUserDetails.setPassword(CORRECT_PASSWORD);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(USERNAME);
+        userEntity.setPassword(CORRECT_PASSWORD);
 
-        Mockito.when(userDetailsService.loadUserByPhoneNumber(PHONE_NUMBER)).thenReturn(loginUserDetails);
+        Mockito.when(userDetailsService.loadUserByUsername(PHONE_NUMBER)).thenReturn(userEntity);
 
-        UserRequestDto userRequestDto = new UserRequestDto(USERNAME,CORRECT_PASSWORD,PHONE_NUMBER);
+        UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, CORRECT_PASSWORD, PHONE_NUMBER);
 
-        Mockito.when(passwordEncoder.matches(userRequestDto.getPassword(),loginUserDetails.getPassword())).thenReturn(true);
+        Mockito.when(passwordEncoder.matches(userRequestDto.getPassword(), userEntity.getPassword())).thenReturn(true);
 
-        String result = loginService.login(userRequestDto);
-
-        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(loginService.loginAndReturnToken(userRequestDto));
     }
 
     @Test
-    void loginWhenUseWrongUsernameOrPassword(){
-        LoginUserDetails loginUserDetails = new LoginUserDetails();
-        loginUserDetails.setUsername(USERNAME);
-        loginUserDetails.setPassword(CORRECT_PASSWORD);
+    void loginWhenUseWrongUsernameOrPassword() {
+        try {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUsername(USERNAME);
+            userEntity.setPassword(CORRECT_PASSWORD);
 
-        Mockito.when(userDetailsService.loadUserByPhoneNumber(PHONE_NUMBER)).thenReturn(loginUserDetails);
+            Mockito.when(userDetailsService.loadUserByUsername(PHONE_NUMBER)).thenReturn(userEntity);
+            UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, INCORRECT_PASSWORD, PHONE_NUMBER);
+            loginService.loginAndReturnToken(userRequestDto);
+        } catch (WrongPhoneNumberOrPasswordException ex) {
+            Assert.assertEquals("login failed, wrong user name or password", ex.getErrorMsg());
+        }
 
-        UserRequestDto userRequestDto = new UserRequestDto(USERNAME, INCORRECT_PASSWORD,PHONE_NUMBER);
-        String result2 = loginService.login(userRequestDto);
-
-        Assertions.assertEquals(result2,"failedWrong user name or password");
     }
 
     @Test
-    void loginWhenUseEmptyUsernameOrPassword(){
+    void loginWhenUseEmptyUsernameOrPassword() {
+        Mockito.when(userDetailsService.loadUserByUsername(PHONE_NUMBER)).thenReturn(null);
+        UserRequestDTO userEntity = new UserRequestDTO(USERNAME, INCORRECT_PASSWORD, PHONE_NUMBER);
+        try {
+            loginService.loginAndReturnToken(userEntity);
+            Assert.fail("Expected a WrongPhoneNumberOrPassword to be thrown");
+        } catch (WrongPhoneNumberOrPasswordException ex) {
+            Assert.assertEquals("login failed, wrong user name or password", ex.getErrorMsg());
+        }
 
-        Mockito.when(userDetailsService.loadUserByPhoneNumber(PHONE_NUMBER)).thenReturn(null);
 
-        UserRequestDto userEntity2 = new UserRequestDto(USERNAME, INCORRECT_PASSWORD,PHONE_NUMBER);
-        String result2 = loginService.login(userEntity2);
-
-        Assertions.assertEquals(result2,"failedWrong user name or password");
     }
 
 }

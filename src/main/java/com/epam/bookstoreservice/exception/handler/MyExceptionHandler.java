@@ -1,45 +1,44 @@
 package com.epam.bookstoreservice.exception.handler;
 
 
+import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.exception.InsufficientInventoryException;
-import com.epam.bookstoreservice.exception.NoSuchBookException;
+import com.epam.bookstoreservice.exception.BookNotFoundException;
 import com.epam.bookstoreservice.exception.PhoneNumberNotFoundException;
 import com.epam.bookstoreservice.exception.UnmatchedIdException;
+import com.epam.bookstoreservice.exception.WrongPhoneNumberOrPasswordException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * Exception for custom exception
+ */
 @ControllerAdvice
 public class MyExceptionHandler {
-    @ExceptionHandler(value = InsufficientInventoryException.class)
-    public ResponseEntity<Map> dealWithInsufficientInventoryException(InsufficientInventoryException ex) {
-        Map<Integer, String> result = new HashMap<>();
-        result.put(ex.getErrorCode(),ex.getErrorMsg());
-        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({
+            BookNotFoundException.class,
+            PhoneNumberNotFoundException.class
+    })
+    public ResponseEntity<Result<String>> handleNotFoundException(Throwable throwable) {
+        return handlerException(throwable,HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = NoSuchBookException.class)
-    public ResponseEntity<Map> dealWithNoSuchBookException(NoSuchBookException ex){
-        Map<Integer, String> result = new HashMap<>();
-        result.put(ex.getErrorCode(),ex.getErrorMsg());
-        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({
+            InsufficientInventoryException.class,
+            UnmatchedIdException.class,
+            WrongPhoneNumberOrPasswordException.class
+
+    })
+    public ResponseEntity<Result<String>> handleBadRequestException(Throwable throwable) {
+        return handlerException(throwable,HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = UnmatchedIdException.class)
-    public ResponseEntity<Map> dealWithUnmatchedIdException(UnmatchedIdException ex){
-        Map<Integer, String> result = new HashMap<>();
-        result.put(ex.getErrorCode(),ex.getErrorMsg());
-        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
+    private ResponseEntity<Result<String>> handlerException(Throwable throwable, HttpStatus status){
+        return ResponseEntity.status(status)
+                .contentType(MediaType.APPLICATION_JSON).body(Result.error(throwable.toString()));
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Map> dealWithPhoneNumberNotFoundException(PhoneNumberNotFoundException  ex){
-        Map<Integer, String> result = new HashMap<>();
-        result.put(ex.getErrorCode(),ex.getErrorMsg());
-        return new ResponseEntity(result,HttpStatus.BAD_REQUEST);
-    }
 }

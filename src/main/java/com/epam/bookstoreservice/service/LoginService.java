@@ -1,6 +1,7 @@
 package com.epam.bookstoreservice.service;
 
-import com.epam.bookstoreservice.dto.request.UserRequestDto;
+import com.epam.bookstoreservice.dto.request.UserRequestDTO;
+import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,7 +16,7 @@ public interface LoginService {
      * @param userRequestDto
      * @return
      */
-    String login(UserRequestDto userRequestDto);
+   TokenResponseDTO loginAndReturnToken(UserRequestDTO userRequestDto);
 
 
 }
