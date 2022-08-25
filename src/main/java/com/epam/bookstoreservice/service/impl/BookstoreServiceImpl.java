@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +32,8 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final Integer SELL_A_BOOK_NUMBER = 1;
+
 
     @Override
     public BookResponseDTO addNewBook(BookRequestDTO bookRequestDTO) {
@@ -42,7 +43,8 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Override
     public BookResponseDTO addBook(BookRequestDTO bookRequestDTO) {
-        BookEntity bookEntityFindByTitle = bookDao.findByTitle(bookRequestDTO.getTitle());
+        Optional<BookEntity> bookFindById = bookDao.findById(bookRequestDTO.getId());
+        BookEntity bookEntityFindByTitle = bookFindById.orElseThrow(BookNotFoundException::new);
 
         Integer totalCount = bookRequestDTO.getTotalCount() + bookEntityFindByTitle.getTotalCount();
         bookEntityFindByTitle.setTotalCount(totalCount);
@@ -80,44 +82,16 @@ public class BookstoreServiceImpl implements BookstoreService {
     @Transactional
     public BookResponseDTO sellABook(Integer id) {
 
-        Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
-
-        BookEntity bookEntityFindById = bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new);
-
-        if (bookEntityFindById.getTotalCount() - bookEntityFindById.getSold() - 1 < 0) {
-            throw new InsufficientInventoryException();
-        }
-
-        bookEntityFindById.setSold(bookEntityFindById.getSold() + 1);
-        bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - 1);
-
-        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
-
-
+        return sellBook(id, SELL_A_BOOK_NUMBER);
     }
 
     @Override
     @Transactional
     public List<BookResponseDTO> sellListOfBooks(List<SellDTO> sellDTOList) {
 
-        Map<Integer, Integer> sellDtoMap = sellDTOList.stream().collect(Collectors.toMap(SellDTO::getId, SellDTO::getSellNumber));
-
-        List<BookEntity> bookEntityListFindById = bookDao
-                .findAllById(sellDTOList.stream().map(SellDTO::getId).collect(Collectors.toList()));
-
-        for (BookEntity book : bookEntityListFindById) {
-            if (book.getTotalCount() - book.getSold() - sellDtoMap.get(book.getId()) < 0) {
-                throw new InsufficientInventoryException();
-            }
-        }
-
-        return bookEntityListFindById.stream()
-                .map(bookEntity -> {
-                    bookEntity.setSold(bookEntity.getSold() + sellDtoMap.get(bookEntity.getId()));
-                    bookEntity.setTotalCount(bookEntity.getTotalCount() - sellDtoMap.get(bookEntity.getId()));
-                    return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntity));
-                }).collect(Collectors.toList());
-
+        return sellDTOList
+                .stream()
+                .map(sellDTO -> sellBook(sellDTO.getId(), sellDTO.getSellNumber())).collect(Collectors.toList());
     }
 
     @Override
@@ -144,7 +118,8 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Override
     public Integer getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
-        List<BookResponseDTO> bookEntityListFindByCategoryAndKeyWord = getBooksByCategoryAndKeyWordUtil(category, keyword);
+        List<BookResponseDTO> bookEntityListFindByCategoryAndKeyWord
+                = getBooksByCategoryAndKeyWordUtil(category, keyword);
 
         return bookEntityListFindByCategoryAndKeyWord
                 .stream().mapToInt(BookResponseDTO::getSold).sum();
@@ -168,5 +143,21 @@ public class BookstoreServiceImpl implements BookstoreService {
                 .stream()
                 .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
+
+    private BookResponseDTO sellBook(Integer id, Integer sellNumber) {
+        Optional<BookEntity> bookFindById = bookDao.findById(id);
+
+        BookEntity bookEntityFindById = bookFindById.orElseThrow(BookNotFoundException::new);
+
+        if (bookEntityFindById.getTotalCount() - sellNumber < 0) {
+            throw new InsufficientInventoryException();
+        }
+
+        bookEntityFindById.setSold(bookEntityFindById.getSold() + sellNumber);
+        bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - sellNumber);
+
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
+    }
+
 }
 

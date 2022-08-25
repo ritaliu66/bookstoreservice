@@ -19,6 +19,10 @@ public class Result<T> {
         this.data = data;
     }
 
+    private Result(String message) {
+        this.message = message;
+        this.data = null;
+    }
     /**
      * The content that is returned without data on success
      *
@@ -26,7 +30,7 @@ public class Result<T> {
      * @return
      */
     public static <T> Result<T> success(String message) {
-        return new Result<>(message, null);
+        return new Result<>(message);
     }
 
     /**
@@ -46,7 +50,7 @@ public class Result<T> {
      * @return
      */
     public static <T> Result<T> error(String message) {
-        return new Result<>(message, null);
+        return new Result<>(message);
     }
 
     /**
