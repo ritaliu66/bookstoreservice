@@ -2,7 +2,6 @@ package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
-import com.epam.bookstoreservice.dto.response.Result;
 ;
 import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
 import com.epam.bookstoreservice.service.impl.LoginServiceImpl;
@@ -47,9 +46,9 @@ class LoginControllerTest {
 
         Mockito.when(loginService.loginAndReturnToken(userRequestDto)).thenReturn(TOKEN);
 
-        ResponseEntity<Result<TokenResponseDTO>> token = loginController.loginAndReturnToken(userRequestDto);
+        ResponseEntity<TokenResponseDTO> token = loginController.loginAndReturnToken(userRequestDto);
 
-        Assertions.assertNotNull(token.getBody().getData());
+        Assertions.assertNotNull(token.getBody());
     }
 
 }

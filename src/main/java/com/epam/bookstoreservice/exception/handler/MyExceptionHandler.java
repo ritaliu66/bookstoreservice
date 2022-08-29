@@ -1,7 +1,6 @@
 package com.epam.bookstoreservice.exception.handler;
 
 
-import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.exception.InsufficientInventoryException;
 import com.epam.bookstoreservice.exception.BookNotFoundException;
 import com.epam.bookstoreservice.exception.PhoneNumberNotFoundException;
@@ -22,7 +21,7 @@ public class MyExceptionHandler {
             BookNotFoundException.class,
             PhoneNumberNotFoundException.class
     })
-    public ResponseEntity<Result<String>> handleNotFoundException(Throwable throwable) {
+    public ResponseEntity<Throwable> handleNotFoundException(Throwable throwable) {
         return handlerException(throwable,HttpStatus.NOT_FOUND);
     }
 
@@ -32,13 +31,13 @@ public class MyExceptionHandler {
             WrongPhoneNumberOrPasswordException.class
 
     })
-    public ResponseEntity<Result<String>> handleBadRequestException(Throwable throwable) {
+    public ResponseEntity<Throwable> handleBadRequestException(Throwable throwable) {
         return handlerException(throwable,HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<Result<String>> handlerException(Throwable throwable, HttpStatus status){
+    private ResponseEntity<Throwable> handlerException(Throwable throwable, HttpStatus status){
         return ResponseEntity.status(status)
-                .contentType(MediaType.APPLICATION_JSON).body(Result.error(throwable.toString()));
+                .contentType(MediaType.APPLICATION_JSON).body(throwable);
     }
 
 }

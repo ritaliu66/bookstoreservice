@@ -1,7 +1,8 @@
 package com.epam.bookstoreservice.security.customreturn;
 
-import com.epam.bookstoreservice.dto.response.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,8 @@ public class RestfulAccessDeniedHandler implements AccessDeniedHandler {
         httpServletResponse.setCharacterEncoding("UTF-8");
         httpServletResponse.setContentType("application/json");
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED
-                , objectMapper.writeValueAsString("Not logged in. Please log in"));
+                , objectMapper.writeValueAsString(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Not logged in. Please log in")));
 
     }
 }

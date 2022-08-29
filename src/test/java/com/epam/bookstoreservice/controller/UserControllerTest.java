@@ -2,7 +2,6 @@ package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
-import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
 import com.epam.bookstoreservice.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -44,10 +43,10 @@ class UserControllerTest {
         UserRequestDTO userRequestDto = new UserRequestDTO(USERNAME, PASSWORD, PHONE_NUMBER);
         UserResponseDTO userResponseDTO = new UserResponseDTO(USERNAME, PHONE_NUMBER);
 
-        Mockito.when(userService.register(any())).thenReturn( userResponseDTO);
+        Mockito.when(userService.registerAUser(any())).thenReturn( userResponseDTO);
 
-        ResponseEntity<Result<UserResponseDTO>> result = userController.register(userRequestDto);
-        Assertions.assertNotNull(result.getBody().getData());
+        ResponseEntity<UserResponseDTO> result = userController.registerAUser(userRequestDto);
+        Assertions.assertNotNull(result.getBody());
     }
 
 }

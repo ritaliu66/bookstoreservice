@@ -1,4 +1,6 @@
 server:
+  error:
+    include-message: always
   port: 8081
 spring:
   mvc:
@@ -25,3 +27,4 @@ jwt:
   secret: bookstore-secret
   tokenHead: Bearer
   tokenHeader: Authorization
+

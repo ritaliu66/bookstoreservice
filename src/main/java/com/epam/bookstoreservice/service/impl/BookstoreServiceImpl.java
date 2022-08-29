@@ -32,7 +32,7 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Integer SELL_A_BOOK_NUMBER = 1;
+    private static final Integer SALES_NUMBER_OF_A_BOOK = 1;
 
 
     @Override
@@ -42,22 +42,22 @@ public class BookstoreServiceImpl implements BookstoreService {
     }
 
     @Override
-    public BookResponseDTO addBook(BookRequestDTO bookRequestDTO) {
-        Optional<BookEntity> bookFindById = bookDao.findById(bookRequestDTO.getId());
-        BookEntity bookEntityFindByTitle = bookFindById.orElseThrow(BookNotFoundException::new);
+    public BookResponseDTO addExistentBook(BookRequestDTO bookRequestDTO) {
 
-        Integer totalCount = bookRequestDTO.getTotalCount() + bookEntityFindByTitle.getTotalCount();
-        bookEntityFindByTitle.setTotalCount(totalCount);
+        BookEntity bookEntityFindById = getBookEntityFindByIdIfExist(bookRequestDTO.getId());
 
-        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindByTitle));
+        addBookEntityTotalCount(bookRequestDTO, bookEntityFindById);
+
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
     }
+
+
 
     @Override
     public BookResponseDTO getBookById(Integer id) {
-        Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
 
         return bookDtoAndBookEntityMapper
-                .entityToResponseDto(bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new));
+                .entityToResponseDto(getBookEntityFindByIdIfExist(id));
     }
 
     @Override
@@ -71,18 +71,15 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Override
     public Integer getNumberOfBooksAvailableById(Integer id) {
-        Optional<BookEntity> bookEntityOptionalFindById = bookDao.findById(id);
 
-        BookEntity bookEntityFindById = bookEntityOptionalFindById.orElseThrow(BookNotFoundException::new);
-
-        return bookEntityFindById.getTotalCount() - bookEntityFindById.getSold();
+        return getBookEntityFindByIdIfExist(id).getTotalCount();
     }
 
     @Override
     @Transactional
     public BookResponseDTO sellABook(Integer id) {
 
-        return sellBook(id, SELL_A_BOOK_NUMBER);
+        return sellBookByIdAndSalesNumber(id, SALES_NUMBER_OF_A_BOOK);
     }
 
     @Override
@@ -91,18 +88,18 @@ public class BookstoreServiceImpl implements BookstoreService {
 
         return sellDTOList
                 .stream()
-                .map(sellDTO -> sellBook(sellDTO.getId(), sellDTO.getSellNumber())).collect(Collectors.toList());
+                .map(sellDTO -> sellBookByIdAndSalesNumber(sellDTO.getId(), sellDTO.getSalesNumber()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public BookResponseDTO updateABook(Integer id, BookRequestDTO bookRequestDTO) {
+
         if (Objects.nonNull(bookRequestDTO.getId()) && !Objects.equals(id, bookRequestDTO.getId())) {
             throw new UnmatchedIdException();
         }
 
-        Optional<BookEntity> bookById = bookDao.findById(id);
-
-        if (bookById.isEmpty()) {
+        if (bookDao.findById(id).isEmpty()){
             throw new BookNotFoundException();
         }
 
@@ -118,22 +115,16 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Override
     public Integer getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
-        List<BookResponseDTO> bookEntityListFindByCategoryAndKeyWord
-                = getBooksByCategoryAndKeyWordUtil(category, keyword);
 
-        return bookEntityListFindByCategoryAndKeyWord
+        return getBooksByCategoryAndKeyWordUtil(category, keyword)
                 .stream().mapToInt(BookResponseDTO::getSold).sum();
     }
 
 
     private List<BookResponseDTO> getBooksByCategoryAndKeyWordUtil(String category, String keyword) {
-        int bookId = -1;
-        try {
-            bookId = Integer.parseInt(keyword);
-        } catch (Exception ex) {
-            logger.info(ex.getMessage());
-        }
-        List<BookEntity> bookEntityListFindByCategoryAndKeyword = bookDao.findByCategoryAndKeyword(category, bookId, keyword);
+
+        List<BookEntity> bookEntityListFindByCategoryAndKeyword = bookDao
+                .findByCategoryAndKeyword(category, getBookIdWhenKeywordIsNumber(keyword), keyword);
 
         if (bookEntityListFindByCategoryAndKeyword.isEmpty()) {
             throw new BookNotFoundException();
@@ -144,20 +135,41 @@ public class BookstoreServiceImpl implements BookstoreService {
                 .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
 
-    private BookResponseDTO sellBook(Integer id, Integer sellNumber) {
-        Optional<BookEntity> bookFindById = bookDao.findById(id);
+    private void addBookEntityTotalCount(BookRequestDTO bookRequestDTO, BookEntity bookEntityFindById) {
+        Integer totalCount = bookRequestDTO.getTotalCount() + bookEntityFindById.getTotalCount();
+        bookEntityFindById.setTotalCount(totalCount);
+    }
 
-        BookEntity bookEntityFindById = bookFindById.orElseThrow(BookNotFoundException::new);
 
-        if (bookEntityFindById.getTotalCount() - sellNumber < 0) {
+    private BookResponseDTO sellBookByIdAndSalesNumber(Integer id, Integer salesNumber) {
+
+        BookEntity bookEntityFindById = getBookEntityFindByIdIfExist(id);
+
+        if (bookEntityFindById.getTotalCount() - salesNumber < 0) {
             throw new InsufficientInventoryException();
         }
 
-        bookEntityFindById.setSold(bookEntityFindById.getSold() + sellNumber);
-        bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - sellNumber);
+        bookEntityFindById.setSold(bookEntityFindById.getSold() + salesNumber);
+        bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - salesNumber);
 
         return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
     }
 
+    private BookEntity getBookEntityFindByIdIfExist(Integer id) {
+        Optional<BookEntity> bookFindById = bookDao.findById(id);
+
+        return bookFindById.orElseThrow(BookNotFoundException::new);
+    }
+
+
+    private int getBookIdWhenKeywordIsNumber(String keyword) {
+        int bookId = -1;
+        try {
+            bookId = Integer.parseInt(keyword);
+        } catch (Exception ex) {
+            logger.info(ex.getMessage());
+        }
+        return bookId;
+    }
 }
 

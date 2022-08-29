@@ -57,6 +57,6 @@ class UserServiceImplTest {
 
         Mockito.when(userDao.save(any())).thenReturn(userEntity);
 
-        Assertions.assertNotNull(userService.register(userRequestDto));
+        Assertions.assertNotNull(userService.registerAUser(userRequestDto));
     }
 }
