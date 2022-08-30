@@ -23,7 +23,7 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @PostMapping("/login")
+    @PostMapping("/token")
     @ApiOperation(value = "login and return a token")
     public ResponseEntity<TokenResponseDTO> loginAndReturnToken(UserRequestDTO userRequestDto) {
 
