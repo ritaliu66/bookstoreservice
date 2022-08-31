@@ -24,10 +24,13 @@ public class RestfulAccessDeniedHandler implements AccessDeniedHandler {
     @Resource
     private ObjectMapper objectMapper;
 
+    private static final String CHARACTER_ENCODING="UTF-8";
+    private static final String CONTENT_TYPE="application/json";
+
     @Override
     public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
-        httpServletResponse.setCharacterEncoding("UTF-8");
-        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding(CHARACTER_ENCODING);
+        httpServletResponse.setContentType(CONTENT_TYPE);
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED
                 , objectMapper.writeValueAsString(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Not logged in. Please log in")));

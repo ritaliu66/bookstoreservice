@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "8ce485d5-cf87-441c-b5e8-40b2f9bbdfef",
+		"name": "bookstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9804466"
+	},
+	"item": [
+		{
+			"name": "sellListOfBooks",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"id\": 1,\r\n    \"salesNumber\": 100\r\n  }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/sell-books",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"sell-books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addNewBook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/add-new-book?author=tom&category=biography&price=45&title=tom and jerry&totalCount=500",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"add-new-book"
+					],
+					"query": [
+						{
+							"key": "author",
+							"value": "tom"
+						},
+						{
+							"key": "category",
+							"value": "biography"
+						},
+						{
+							"key": "price",
+							"value": "45"
+						},
+						{
+							"key": "title",
+							"value": "tom and jerry"
+						},
+						{
+							"key": "totalCount",
+							"value": "500"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addExistentBook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/add-book?author=tom&category=biography&price=45&title=tom and jerry&totalCount=34&id=5",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"add-book"
+					],
+					"query": [
+						{
+							"key": "author",
+							"value": "tom"
+						},
+						{
+							"key": "category",
+							"value": "biography"
+						},
+						{
+							"key": "price",
+							"value": "45"
+						},
+						{
+							"key": "title",
+							"value": "tom and jerry"
+						},
+						{
+							"key": "totalCount",
+							"value": "34"
+						},
+						{
+							"key": "id",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllBooks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/book-list",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"book-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBookById",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/book/1?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"book",
+						"1"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sellABook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/sell-book/1?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"sell-book",
+						"1"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getNumberOfBooksAvailableById",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/number-of-books/1?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"number-of-books",
+						"1"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateABook",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/update-book/1?id=1&id=1&category=literary works&price=66&title=Pride and Prejudice&totalCount=1100&author=Jane",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"update-book",
+						"1"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						},
+						{
+							"key": "id",
+							"value": "1"
+						},
+						{
+							"key": "category",
+							"value": "literary works"
+						},
+						{
+							"key": "price",
+							"value": "66"
+						},
+						{
+							"key": "title",
+							"value": "Pride and Prejudice"
+						},
+						{
+							"key": "totalCount",
+							"value": "1100"
+						},
+						{
+							"key": "author",
+							"value": "Jane"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBookByCategoryAndKeyword",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/books?category=literary works&keyword=jane",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"books"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "literary works"
+						},
+						{
+							"key": "keyword",
+							"value": "jane"
+						},
+						{
+							"key": null,
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getNumberOfBooksSoldPerCategoryAndKeyword",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiY3JlYXRlZCI6MTY2MTkxNzMyMjI3NCwiZXhwIjoxNjYyNTIyMTIyfQ.4v20xypo3eJpzXHMs_RleJ0zZVxP4iEssTNMT5CZK8l-MaAZ-g40XRNUhjrdRnB1SGz7ovb1rOAXToatdln8LQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8081/v1/bookstore/number-of-books?category=literary works&keyword=jane",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"bookstore",
+						"number-of-books"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "literary works"
+						},
+						{
+							"key": "keyword",
+							"value": "jane"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

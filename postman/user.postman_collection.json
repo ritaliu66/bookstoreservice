@@ -1,0 +1,44 @@
+{
+	"info": {
+		"_postman_id": "a53832ed-ccd6-40cc-a247-31c79634f09f",
+		"name": "user",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9804466"
+	},
+	"item": [
+		{
+			"name": "registerAUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/user/register?username=6&password=6&phoneNumber=6",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"user",
+						"register"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "6"
+						},
+						{
+							"key": "password",
+							"value": "6"
+						},
+						{
+							"key": "phoneNumber",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

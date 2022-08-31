@@ -26,11 +26,14 @@ public class RestAuthorizationEntryPoint implements AuthenticationEntryPoint {
     @Resource
     private ObjectMapper objectMapper;
 
+    private static final String CHARACTER_ENCODING="UTF-8";
+    private static final String CONTENT_TYPE="application/json";
+
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException {
 
-        httpServletResponse.setCharacterEncoding("UTF-8");
-        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding(CHARACTER_ENCODING);
+        httpServletResponse.setContentType(CONTENT_TYPE);
         httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN
                 , objectMapper.writeValueAsString(ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Insufficient permissions, please contact the administrator")));

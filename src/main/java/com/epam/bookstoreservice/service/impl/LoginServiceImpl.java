@@ -42,6 +42,7 @@ public class LoginServiceImpl implements LoginService {
 
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         String token = jwtTokenUtil.generateToken((UserEntity) userDetails);
