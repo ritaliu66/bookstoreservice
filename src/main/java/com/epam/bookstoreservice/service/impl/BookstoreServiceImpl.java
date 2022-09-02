@@ -30,11 +30,9 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     private final BookDao bookDao;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private static final Integer SALES_NUMBER_OF_A_BOOK = 1;
 
-    private static final Integer DEFAULT_BOOK_ID=-1;
+    private static final Integer DEFAULT_BOOK_ID = -1;
 
 
     @Override
@@ -46,7 +44,7 @@ public class BookstoreServiceImpl implements BookstoreService {
     @Override
     public BookResponseDTO addExistentBook(BookRequestDTO bookRequestDTO) {
 
-        BookEntity bookEntityFindById = checkAndGetBookEntityFindByIdIfExist(bookRequestDTO.getId());
+        BookEntity bookEntityFindById = checkAndGetABookEntityFindByIdIfExist(bookRequestDTO.getId());
 
         addBookEntityTotalCount(bookRequestDTO, bookEntityFindById);
 
@@ -58,7 +56,7 @@ public class BookstoreServiceImpl implements BookstoreService {
     public BookResponseDTO getBookById(Integer id) {
 
         return bookDtoAndBookEntityMapper
-                .entityToResponseDto(checkAndGetBookEntityFindByIdIfExist(id));
+                .entityToResponseDto(checkAndGetABookEntityFindByIdIfExist(id));
     }
 
     @Override
@@ -73,27 +71,29 @@ public class BookstoreServiceImpl implements BookstoreService {
     @Override
     public Integer getNumberOfBooksAvailableById(Integer id) {
 
-        return checkAndGetBookEntityFindByIdIfExist(id).getTotalCount();
+        return checkAndGetABookEntityFindByIdIfExist(id).getTotalCount();
     }
 
     @Override
     @Transactional
     public BookResponseDTO sellABook(Integer id) {
 
-        checkInventory(id, SALES_NUMBER_OF_A_BOOK);
+        checkInventoryOfABook(checkAndGetABookEntityFindByIdIfExist(id), SALES_NUMBER_OF_A_BOOK);
 
-        return sellBookByIdAndSalesNumber(id, SALES_NUMBER_OF_A_BOOK);
+        return sellBookByIdAndSalesNumber(checkAndGetABookEntityFindByIdIfExist(id), SALES_NUMBER_OF_A_BOOK);
     }
 
     @Override
     @Transactional
     public List<BookResponseDTO> sellListOfBooks(List<SellDTO> sellDTOList) {
 
-        sellDTOList.forEach(sellDTO -> checkInventory(sellDTO.getId(), sellDTO.getSalesNumber()));
+        checkInventoryOfBooks(sellDTOList);
 
         return sellDTOList
                 .stream()
-                .map(sellDTO -> sellBookByIdAndSalesNumber(sellDTO.getId(), sellDTO.getSalesNumber()))
+                .map(sellDTO ->
+                        sellBookByIdAndSalesNumber(checkAndGetABookEntityFindByIdIfExist(sellDTO.getId())
+                                , sellDTO.getSalesNumber()))
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public class BookstoreServiceImpl implements BookstoreService {
 
         validId(id, bookRequestDTO);
 
-        checkAndGetBookEntityFindByIdIfExist(id);
+        checkAndGetABookEntityFindByIdIfExist(id);
 
         return bookDtoAndBookEntityMapper
                 .entityToResponseDto(bookDao.save(bookDtoAndBookEntityMapper.requestDtoToEntity(bookRequestDTO)));
@@ -129,16 +129,15 @@ public class BookstoreServiceImpl implements BookstoreService {
         bookEntityFindById.setTotalCount(totalCount);
     }
 
-    private BookEntity checkAndGetBookEntityFindByIdIfExist(Integer id) {
+    private BookEntity checkAndGetABookEntityFindByIdIfExist(Integer id) {
         Optional<BookEntity> bookFindById = bookDao.findById(id);
 
         return bookFindById.orElseThrow(BookNotFoundException::new);
     }
 
-    private void checkInventory(Integer id, Integer salesNumber) {
-        BookEntity bookEntityFindById = checkAndGetBookEntityFindByIdIfExist(id);
+    private void checkInventoryOfABook(BookEntity bookEntity, Integer salesNumber) {
 
-        int remainingInventory = bookEntityFindById.getTotalCount() - salesNumber;
+        int remainingInventory = bookEntity.getTotalCount() - salesNumber;
 
         if (remainingInventory < 0) {
             throw new InsufficientInventoryException();
@@ -146,14 +145,17 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     }
 
-    private BookResponseDTO sellBookByIdAndSalesNumber(Integer id, Integer salesNumber) {
+    private void checkInventoryOfBooks(List<SellDTO> sellDTOList) {
+        sellDTOList.forEach(sellDTO ->
+                checkInventoryOfABook(checkAndGetABookEntityFindByIdIfExist(sellDTO.getId()), sellDTO.getSalesNumber()));
+    }
 
-        BookEntity bookEntityFindById = checkAndGetBookEntityFindByIdIfExist(id);
+    private BookResponseDTO sellBookByIdAndSalesNumber(BookEntity bookEntity, Integer salesNumber) {
 
-        bookEntityFindById.setSold(bookEntityFindById.getSold() + salesNumber);
-        bookEntityFindById.setTotalCount(bookEntityFindById.getTotalCount() - salesNumber);
+        bookEntity.setSold(bookEntity.getSold() + salesNumber);
+        bookEntity.setTotalCount(bookEntity.getTotalCount() - salesNumber);
 
-        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntityFindById));
+        return bookDtoAndBookEntityMapper.entityToResponseDto(bookDao.save(bookEntity));
     }
 
     private void validId(Integer id, BookRequestDTO bookRequestDTO) {
@@ -161,7 +163,7 @@ public class BookstoreServiceImpl implements BookstoreService {
         boolean idNonNullAndUnmatched
                 = Objects.nonNull(bookRequestDTO.getId()) && !Objects.equals(id, bookRequestDTO.getId());
 
-        if (idNonNullAndUnmatched){
+        if (idNonNullAndUnmatched) {
             throw new UnmatchedIdException();
         }
     }
@@ -171,23 +173,39 @@ public class BookstoreServiceImpl implements BookstoreService {
         List<BookEntity> bookEntityListFindByCategoryAndKeyword = bookDao
                 .findByCategoryAndKeyword(category, getBookIdWhenKeywordIsNumber(keyword), keyword);
 
-        bookEntityListFindByCategoryAndKeyword
-                .forEach(bookEntity -> checkAndGetBookEntityFindByIdIfExist(bookEntity.getId()));
+        checkBookEntityListIfExist(bookEntityListFindByCategoryAndKeyword);
 
         return bookEntityListFindByCategoryAndKeyword
                 .stream()
                 .map(bookDtoAndBookEntityMapper::entityToResponseDto).collect(Collectors.toList());
     }
 
+    private void checkBookEntityListIfExist(List<BookEntity> bookEntityListFindByCategoryAndKeyword) {
+        if (bookEntityListFindByCategoryAndKeyword.isEmpty()) {
+            throw new BookNotFoundException();
+        }
+    }
 
     private int getBookIdWhenKeywordIsNumber(String keyword) {
-        int bookId = DEFAULT_BOOK_ID;
-        try {
-            bookId = Integer.parseInt(keyword);
-        } catch (Exception ex) {
-            logger.info(ex.getMessage());
+        if (checkKeyWordIsDigit(keyword)){
+            return Integer.parseInt(keyword);
         }
-        return bookId;
+        return DEFAULT_BOOK_ID;
     }
+
+    private boolean checkKeyWordIsDigit(String keyword) {
+        char[] keywordChars = keyword.toCharArray();
+
+        for (char keywordChar : keywordChars) {
+            boolean keywordCharIsNotDigit = !Character.isDigit(keywordChar);
+
+            if (keywordCharIsNotDigit) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
 

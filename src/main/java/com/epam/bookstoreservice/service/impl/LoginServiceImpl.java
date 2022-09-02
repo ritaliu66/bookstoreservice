@@ -35,18 +35,29 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public TokenResponseDTO loginAndReturnToken(UserRequestDTO userRequestDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userRequestDto.getPhoneNumber());
-        if (Objects.isNull(userDetails) ||
-                !passwordEncoder.matches(userRequestDto.getPassword(), userDetails.getPassword())) {
+
+        validatePhoneNumberAndPassword(userRequestDto, userDetails);
+
+        setAuthentication(userDetails);
+
+        return new TokenResponseDTO(TOKEN_HEADER,jwtTokenUtil.generateToken((UserEntity) userDetails));
+    }
+
+    private void validatePhoneNumberAndPassword(UserRequestDTO userRequestDto, UserDetails userDetails) {
+        boolean userDetailIsNull = Objects.isNull(userDetails);
+        boolean passwordNotMatch = !passwordEncoder
+                .matches(Objects.requireNonNull(userRequestDto).getPassword()
+                        , Objects.requireNonNull(userRequestDto).getPassword());
+
+        if (userDetailIsNull||passwordNotMatch) {
             throw new WrongPhoneNumberOrPasswordException();
         }
+    }
 
+    private void setAuthentication(UserDetails userDetails) {
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        String token = jwtTokenUtil.generateToken((UserEntity) userDetails);
-
-        return new TokenResponseDTO(TOKEN_HEADER,token);
     }
 }
