@@ -18,5 +18,5 @@ public class SellDTO {
 
     private Integer id;
 
-    private Integer sellNumber;
+    private Integer salesNumber;
 }

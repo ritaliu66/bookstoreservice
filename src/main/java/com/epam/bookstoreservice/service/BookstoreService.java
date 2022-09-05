@@ -12,7 +12,7 @@ import java.util.List;
 public interface BookstoreService {
     BookResponseDTO addNewBook(BookRequestDTO book);
 
-    BookResponseDTO addBook(BookRequestDTO book);
+    BookResponseDTO addExistentBook(BookRequestDTO book);
 
     BookResponseDTO getBookById(Integer id);
 

@@ -42,15 +42,15 @@ class BookstoreServiceImplTest {
     @Mock
     private BookDao bookDao;
 
-    private static final BigDecimal PRICE = new BigDecimal(54.5);
+    private static final BigDecimal PRICE = new BigDecimal("54.5");
 
-    private static final BigDecimal NEW_PRICE = new BigDecimal(50);
+    private static final BigDecimal NEW_PRICE = new BigDecimal("50");
 
     private static final BookRequestDTO BOOK_REQUEST_DTO = new BookRequestDTO(1, "Jane", "Pride and Prejudice", "literary works", NEW_PRICE, 100);
 
-    private static final BookRequestDTO UPDATE_BOOK_REQUEST = new BookRequestDTO(1, "Jane", "Pride and Prejudice", "literary works", PRICE, 100);
+    private static final BookRequestDTO UPDATE_BOOK_REQUEST_DTO = new BookRequestDTO(1, "Jane", "Pride and Prejudice", "literary works", PRICE, 100);
 
-    private static final BookRequestDTO NONEXISTENT_UPDATE_BOOK_REQUEST = new BookRequestDTO(2, "Jane", "Pride and Prejudice", "literary works", PRICE, 100);
+    private static final BookRequestDTO NONEXISTENT_UPDATE_BOOK_REQUEST_DTO = new BookRequestDTO(2, "Jane", "Pride and Prejudice", "literary works", PRICE, 100);
 
     private static final BookEntity EXISTENT_BOOK_ENTITY = new BookEntity(1, "Jane", "Pride and Prejudice", "literary works", PRICE, 1000, 100);
 
@@ -60,11 +60,11 @@ class BookstoreServiceImplTest {
 
     private static final BookEntity WRONG_UPDATE_BOOK_ENTITY = new BookEntity(1, "Jane", "Pride and Prejudice", "literary works", NEW_PRICE, 100, 0);
 
-    private static final BookEntity SOLD_OUT_BOOK = new BookEntity(1, "Jane", "Pride and Prejudice", "literary works", PRICE, 1000, 1000);
+    private static final BookEntity SOLD_OUT_BOOK_ENTITY = new BookEntity(1, "Jane", "Pride and Prejudice", "literary works", PRICE, 0, 1000);
 
-    private static final Integer ID = 1;
+    private static final Integer BOOK_ID = 1;
 
-    private static final Integer NEW_ID = 2;
+    private static final Integer NEW_BOOK_ID = 2;
 
     private static final List<BookEntity> BOOK_ENTITY_LIST = new ArrayList<>();
 
@@ -92,19 +92,19 @@ class BookstoreServiceImplTest {
 
     @Test
     void addBook() {
-        Mockito.when(bookDao.findByTitle(any()))
-                .thenReturn(EXISTENT_BOOK_ENTITY);
+        Mockito.when(bookDao.findById(any()))
+                .thenReturn(Optional.of(EXISTENT_BOOK_ENTITY));
         Mockito.when(bookDao.save(any()))
                 .thenReturn(EXISTENT_BOOK_ENTITY);
 
-        Assertions.assertEquals(TOTAL_COUNT, bookstoreService.addBook(BOOK_REQUEST_DTO).getTotalCount());
+        Assertions.assertEquals(TOTAL_COUNT, bookstoreService.addExistentBook(BOOK_REQUEST_DTO).getTotalCount());
     }
 
     @Test
     void getBookByIdSuccessfully() {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(EXISTENT_BOOK_ENTITY));
 
-        Assertions.assertNotNull(bookstoreService.getBookById(ID));
+        Assertions.assertNotNull(bookstoreService.getBookById(BOOK_ID));
     }
 
     @Test
@@ -112,7 +112,7 @@ class BookstoreServiceImplTest {
 
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.empty());
         try {
-            bookstoreService.getBookById(ID);
+            bookstoreService.getBookById(BOOK_ID);
             Assert.fail("Expected a NoSuchBookException to be thrown");
         } catch (BookNotFoundException ex) {
             Assert.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
@@ -133,14 +133,14 @@ class BookstoreServiceImplTest {
     void getNumberOfBooksAvailableByIdSuccessfully() {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(EXISTENT_BOOK_ENTITY));
 
-        Assertions.assertNotNull(bookstoreService.getNumberOfBooksAvailableById(ID));
+        Assertions.assertNotNull(bookstoreService.getNumberOfBooksAvailableById(BOOK_ID));
     }
 
     @Test
     void getNumberOfBooksAvailableByIdUnsuccessfully() {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.empty());
         try {
-            bookstoreService.getNumberOfBooksAvailableById(ID);
+            bookstoreService.getNumberOfBooksAvailableById(BOOK_ID);
             Assert.fail("Expected a NoSuchBookException to be thrown");
         } catch (BookNotFoundException ex) {
             Assert.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
@@ -152,17 +152,17 @@ class BookstoreServiceImplTest {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(EXISTENT_BOOK_ENTITY));
         Mockito.when(bookDao.save(any())).thenReturn(EXISTENT_BOOK_ENTITY);
 
-        Assertions.assertNotNull(bookstoreService.sellABook(ID));
+        Assertions.assertNotNull(bookstoreService.sellABook(BOOK_ID));
     }
 
     @Test
     void sellABookUnsuccessfullyByInsufficientInventory() {
-        Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(SOLD_OUT_BOOK));
+        Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(SOLD_OUT_BOOK_ENTITY));
         try {
-            bookstoreService.sellABook(ID);
-            Assert.fail("Expected an InsufficientInventoryException to be thrown");
+            bookstoreService.sellABook(BOOK_ID);
+            Assertions.fail("Expected an InsufficientInventoryException to be thrown");
         } catch (InsufficientInventoryException ex) {
-            Assert.assertEquals("This book is out of stock", ex.getErrorMsg());
+            Assertions.assertEquals("This book is out of stock", ex.getErrorMsg());
         }
 
     }
@@ -171,42 +171,38 @@ class BookstoreServiceImplTest {
     void sellABookUnsuccessfullyByNoSuchBook() {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.empty());
         try {
-            bookstoreService.sellABook(ID);
-            Assert.fail("Expected a NoSuchBookException to be thrown");
+            bookstoreService.sellABook(BOOK_ID);
+            Assertions.fail("Expected a NoSuchBookException to be thrown");
         } catch (BookNotFoundException ex) {
-            Assert.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
+            Assertions.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
         }
 
     }
 
     @Test
     void sellListOfBooksSuccessfully() {
-        List<BookEntity> bookEntityList = new ArrayList<>();
-        bookEntityList.add(EXISTENT_BOOK_ENTITY);
+
 
         List<SellDTO> sellDTOList = new ArrayList<>();
         sellDTOList.add(SELL_DTO);
 
-        Mockito.when(bookDao.findAllById(any())).thenReturn(bookEntityList);
+        Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(EXISTENT_BOOK_ENTITY));
 
-
-        Assertions.assertTrue(!bookstoreService.sellListOfBooks(sellDTOList).isEmpty());
+        Assertions.assertFalse(bookstoreService.sellListOfBooks(sellDTOList).isEmpty());
     }
 
     @Test
     void sellListOfBooksUnsuccessfully() {
-        List<BookEntity> bookEntityList = new ArrayList<>();
-        bookEntityList.add(SOLD_OUT_BOOK);
 
         List<SellDTO> sellDTOList = new ArrayList<>();
         sellDTOList.add(SELL_DTO);
 
-        Mockito.when(bookDao.findAllById(any())).thenReturn(bookEntityList);
+        Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(SOLD_OUT_BOOK_ENTITY));
         try {
             bookstoreService.sellListOfBooks(sellDTOList);
-            Assert.fail("Expected an InsufficientInventoryException to be thrown");
+            Assertions.fail("Expected an InsufficientInventoryException to be thrown");
         } catch (InsufficientInventoryException ex) {
-            Assert.assertEquals("This book is out of stock", ex.getErrorMsg());
+            Assertions.assertEquals("This book is out of stock", ex.getErrorMsg());
         }
     }
 
@@ -215,7 +211,7 @@ class BookstoreServiceImplTest {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(UPDATE_BOOK_ENTITY));
         Mockito.when(bookDao.save(any())).thenReturn(UPDATE_BOOK_ENTITY);
 
-        Assertions.assertEquals(NEW_PRICE, bookstoreService.updateABook(ID, UPDATE_BOOK_REQUEST).getPrice());
+        Assertions.assertEquals(NEW_PRICE, bookstoreService.updateABook(BOOK_ID, UPDATE_BOOK_REQUEST_DTO).getPrice());
 
     }
 
@@ -223,11 +219,11 @@ class BookstoreServiceImplTest {
     void updateABookUnsuccessfullyByUnmatchedId() {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.of(WRONG_UPDATE_BOOK_ENTITY));
         try {
-            bookstoreService.updateABook(NEW_ID, UPDATE_BOOK_REQUEST);
+            bookstoreService.updateABook(NEW_BOOK_ID, UPDATE_BOOK_REQUEST_DTO);
 
-            Assert.fail("Expected an UnmatchedIdException to be thrown");
+            Assertions.fail("Expected an UnmatchedIdException to be thrown");
         } catch (UnmatchedIdException ex) {
-            Assert.assertEquals("The id in the BookDTO does not match the path variable id", ex.getErrorMsg());
+            Assertions.assertEquals("The id in the BookDTO does not match the path variable id", ex.getErrorMsg());
         }
 
     }
@@ -236,11 +232,11 @@ class BookstoreServiceImplTest {
     void updateABookUnsuccessfullyByNoSuchBook() {
         Mockito.when(bookDao.findById(any())).thenReturn(Optional.empty());
         try {
-            bookstoreService.updateABook(NEW_ID, NONEXISTENT_UPDATE_BOOK_REQUEST);
+            bookstoreService.updateABook(NEW_BOOK_ID, NONEXISTENT_UPDATE_BOOK_REQUEST_DTO);
 
-            Assert.fail("Expected a NoSuchBookException to be thrown");
+            Assertions.fail("Expected a NoSuchBookException to be thrown");
         } catch (BookNotFoundException ex) {
-            Assert.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
+            Assertions.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
         }
 
     }
@@ -252,20 +248,18 @@ class BookstoreServiceImplTest {
 
         Mockito.when(bookDao.findByCategoryAndKeyword(any(), any(), any())).thenReturn(bookEntityList);
 
-        Assertions.assertTrue(!bookstoreService.getBooksByCategoryAndKeyWord("literary works", "1").isEmpty());
+        Assertions.assertFalse(bookstoreService.getBooksByCategoryAndKeyWord("literary works", "1").isEmpty());
     }
 
 
     @Test
     void getBooksByCategoryAndKeyWordUnsuccessfullyByNoSuchBook() {
-        List<BookEntity> bookEntityList = new ArrayList<>();
-        bookEntityList.add(EXISTENT_BOOK_ENTITY);
         Mockito.when(bookDao.findByCategoryAndKeyword(any(), any(), any())).thenReturn(new ArrayList<>());
         try {
             bookstoreService.getBooksByCategoryAndKeyWord("literary works", "wrong");
-            Assert.fail("Expected a NoSuchBookException to be thrown");
+            Assertions.fail("Expected a NoSuchBookException to be thrown");
         } catch (BookNotFoundException ex) {
-            Assert.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
+            Assertions.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
         }
     }
 
@@ -283,14 +277,12 @@ class BookstoreServiceImplTest {
 
     @Test
     void getNumberOfBooksSoldPerCategoryAndKeywordByNoSuchBook() {
-        List<BookEntity> bookEntityList = new ArrayList<>();
-        bookEntityList.add(EXISTENT_BOOK_ENTITY);
         Mockito.when(bookDao.findByCategoryAndKeyword(any(), any(), any())).thenReturn(new ArrayList<>());
         try {
             bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword("wrong", "Jane");
-            Assert.fail("Expected a NoSuchBookException to be thrown");
+            Assertions.fail("Expected a NoSuchBookException to be thrown");
         } catch (BookNotFoundException ex) {
-            Assert.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
+            Assertions.assertEquals("This book can not be found in the bookstore", ex.getErrorMsg());
         }
     }
 

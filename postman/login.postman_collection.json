@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "dd4b28ca-258d-4aa5-9fc5-cabcf423a04e",
+		"name": "login",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9804466"
+	},
+	"item": [
+		{
+			"name": "loginAndReturnToken",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/login/token?password=1&phoneNumber=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"login",
+						"token"
+					],
+					"query": [
+						{
+							"key": "password",
+							"value": "1"
+						},
+						{
+							"key": "phoneNumber",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -14,5 +14,5 @@ public interface UserService {
      * @param userEntity
      * @return
      */
-   UserResponseDTO register(UserRequestDTO userEntity);
+   UserResponseDTO registerAUser(UserRequestDTO userEntity);
 }

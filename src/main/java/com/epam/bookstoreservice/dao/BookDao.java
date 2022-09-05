@@ -12,8 +12,6 @@ import java.util.List;
 public interface BookDao extends JpaRepository<BookEntity,Integer> {
 
 
-    BookEntity findByTitle(String title);
-
     @Query("select b from BookEntity b where b.category = :category " +
             "and (b.id = :bookId or b.author = :keyword or b.title = :keyword)")
     List<BookEntity> findByCategoryAndKeyword(String category,Integer bookId,String keyword);

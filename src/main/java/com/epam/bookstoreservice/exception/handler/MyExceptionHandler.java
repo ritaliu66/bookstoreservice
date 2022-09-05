@@ -1,7 +1,6 @@
 package com.epam.bookstoreservice.exception.handler;
 
 
-import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.exception.InsufficientInventoryException;
 import com.epam.bookstoreservice.exception.BookNotFoundException;
 import com.epam.bookstoreservice.exception.PhoneNumberNotFoundException;
@@ -13,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Exception for custom exception
  */
@@ -24,8 +21,8 @@ public class MyExceptionHandler {
             BookNotFoundException.class,
             PhoneNumberNotFoundException.class
     })
-    public ResponseEntity<Result<String>> handleNotFoundException(Throwable throwable) {
-        return handlerException(throwable,HttpStatus.NOT_FOUND,HttpServletResponse.SC_NOT_FOUND);
+    public ResponseEntity<Throwable> handleNotFoundException(Throwable throwable) {
+        return handlerException(throwable,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
@@ -34,13 +31,13 @@ public class MyExceptionHandler {
             WrongPhoneNumberOrPasswordException.class
 
     })
-    public ResponseEntity<Result<String>> handleBadRequestException(Throwable throwable) {
-        return handlerException(throwable,HttpStatus.BAD_REQUEST,HttpServletResponse.SC_BAD_REQUEST);
+    public ResponseEntity<Throwable> handleBadRequestException(Throwable throwable) {
+        return handlerException(throwable,HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<Result<String>> handlerException(Throwable throwable, HttpStatus status, Integer errorCode){
+    private ResponseEntity<Throwable> handlerException(Throwable throwable, HttpStatus status){
         return ResponseEntity.status(status)
-                .contentType(MediaType.APPLICATION_JSON).body(Result.error(errorCode,throwable.toString()));
+                .contentType(MediaType.APPLICATION_JSON).body(throwable);
     }
 
 }
