@@ -187,7 +187,7 @@ public class BookstoreServiceImpl implements BookstoreService {
     }
 
     private int getBookIdWhenKeywordIsNumber(String keyword) {
-        if (checkKeyWordIsDigit(keyword)){
+        if (checkKeyWordIsDigit(keyword)) {
             return Integer.parseInt(keyword);
         }
         return DEFAULT_BOOK_ID;
@@ -197,8 +197,7 @@ public class BookstoreServiceImpl implements BookstoreService {
         char[] keywordChars = keyword.toCharArray();
 
         for (char keywordChar : keywordChars) {
-            boolean keywordCharIsNotDigit = !Character.isDigit(keywordChar);
-
+            boolean keywordCharIsNotDigit = isNotDigit(keywordChar);
             if (keywordCharIsNotDigit) {
                 return false;
             }
@@ -206,6 +205,9 @@ public class BookstoreServiceImpl implements BookstoreService {
         return true;
     }
 
+    private boolean isNotDigit(char AChar) {
+        return !Character.isDigit(AChar);
+    }
 
 }
 

@@ -44,12 +44,18 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private void validatePhoneNumberAndPassword(UserRequestDTO userRequestDto, UserDetails userDetails) {
-        boolean userDetailIsNull = Objects.isNull(userDetails);
-        boolean passwordNotMatch = !passwordEncoder
-                .matches(Objects.requireNonNull(userRequestDto).getPassword()
-                        , Objects.requireNonNull(userRequestDto).getPassword());
+        validateUserDetails(userDetails);
 
-        if (userDetailIsNull||passwordNotMatch) {
+        boolean passwordNotMatch = notMatches
+                (Objects.requireNonNull(userRequestDto).getPassword(),Objects.requireNonNull(userDetails).getPassword());
+
+        if (passwordNotMatch) {
+            throw new WrongPhoneNumberOrPasswordException();
+        }
+    }
+
+    private void validateUserDetails(UserDetails userDetails){
+        if (Objects.isNull(userDetails)){
             throw new WrongPhoneNumberOrPasswordException();
         }
     }
@@ -60,4 +66,10 @@ public class LoginServiceImpl implements LoginService {
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
+
+    private boolean notMatches(String rawPassword,String encodePassword){
+        return !passwordEncoder.matches(rawPassword,encodePassword);
+
+    }
+
 }
