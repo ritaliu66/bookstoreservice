@@ -3,6 +3,7 @@ package com.epam.bookstoreservice.controller;
 import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
+import com.epam.bookstoreservice.model.UserModel;
 import com.epam.bookstoreservice.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -45,8 +48,8 @@ class UserControllerTest {
 
         Mockito.when(userService.registerAUser(any())).thenReturn( userResponseDTO);
 
-        ResponseEntity<UserResponseDTO> result = userController.registerAUser(userRequestDto);
-        Assertions.assertNotNull(result.getBody());
+        ResponseEntity<UserModel> result = userController.registerAUser(userRequestDto);
+        Assertions.assertNotNull(Objects.requireNonNull(result.getBody()).getContent());
     }
 
 }

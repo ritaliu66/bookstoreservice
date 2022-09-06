@@ -4,6 +4,7 @@ import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 ;
 import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
+import com.epam.bookstoreservice.model.TokenModel;
 import com.epam.bookstoreservice.service.impl.LoginServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Objects;
 
 /**
  * unit test for login controller
@@ -46,9 +49,9 @@ class LoginControllerTest {
 
         Mockito.when(loginService.loginAndReturnToken(userRequestDto)).thenReturn(TOKEN);
 
-        ResponseEntity<TokenResponseDTO> token = loginController.loginAndReturnToken(userRequestDto);
+        ResponseEntity<TokenModel> token = loginController.loginAndReturnToken(userRequestDto);
 
-        Assertions.assertNotNull(token.getBody());
+        Assertions.assertNotNull(Objects.requireNonNull(token.getBody()).getContent());
     }
 
 }
