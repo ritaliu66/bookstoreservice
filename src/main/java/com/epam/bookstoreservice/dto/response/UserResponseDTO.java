@@ -1,6 +1,5 @@
 package com.epam.bookstoreservice.dto.response;
 
-import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel
 @Builder
 public class UserResponseDTO {
 
