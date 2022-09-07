@@ -7,7 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
-
+/**
+ * the model for bookResponseDTO
+ */
 @Getter
 @EqualsAndHashCode(callSuper = false)
 public class BookModel extends RepresentationModel<BookModel> {

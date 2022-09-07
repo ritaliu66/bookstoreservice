@@ -7,8 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
-
-
+/**
+ * the model for userResponseDTO
+ */
 @Getter
 @EqualsAndHashCode(callSuper = false)
 public class UserModel extends RepresentationModel<UserModel> {

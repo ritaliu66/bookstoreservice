@@ -11,8 +11,6 @@ import com.epam.bookstoreservice.exception.UnmatchedIdException;
 import com.epam.bookstoreservice.mapper.BookDtoAndBookEntityMapper;
 import com.epam.bookstoreservice.service.BookstoreService;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -161,11 +159,15 @@ public class BookstoreServiceImpl implements BookstoreService {
     private void validId(Integer id, BookRequestDTO bookRequestDTO) {
 
         boolean idNonNullAndUnmatched
-                = Objects.nonNull(bookRequestDTO.getId()) && !Objects.equals(id, bookRequestDTO.getId());
+                = Objects.nonNull(bookRequestDTO.getId()) && notEquals(id,bookRequestDTO.getId());
 
         if (idNonNullAndUnmatched) {
             throw new UnmatchedIdException();
         }
+    }
+
+    private boolean notEquals(Object first,Object second){
+        return !Objects.equals(first,second);
     }
 
     private List<BookResponseDTO> getBooksByCategoryAndKeyWordUtil(String category, String keyword) {
@@ -197,16 +199,15 @@ public class BookstoreServiceImpl implements BookstoreService {
         char[] keywordChars = keyword.toCharArray();
 
         for (char keywordChar : keywordChars) {
-            boolean keywordCharIsNotDigit = isNotDigit(keywordChar);
-            if (keywordCharIsNotDigit) {
+            if ( isNotDigit(keywordChar)) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isNotDigit(char AChar) {
-        return !Character.isDigit(AChar);
+    private boolean isNotDigit(char character) {
+        return !Character.isDigit(character);
     }
 
 }

@@ -3,6 +3,7 @@ package com.epam.bookstoreservice.controller;
 import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
+import com.epam.bookstoreservice.mapper.UserResponseDTOAssembler;
 import com.epam.bookstoreservice.model.UserModel;
 import com.epam.bookstoreservice.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
@@ -36,9 +38,12 @@ class UserControllerTest {
 
     private final static String PHONE_NUMBER = "111";
 
+    @Autowired
+    private UserResponseDTOAssembler userResponseDTOAssembler;
+
     @BeforeEach
     public void init() {
-        userController = new UserController(userService);
+        userController = new UserController(userService,userResponseDTOAssembler);
     }
 
     @Test

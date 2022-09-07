@@ -2,6 +2,7 @@ package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
+import com.epam.bookstoreservice.mapper.UserResponseDTOAssembler;
 import com.epam.bookstoreservice.model.UserModel;
 import com.epam.bookstoreservice.service.UserService;
 import lombok.AllArgsConstructor;
@@ -22,18 +23,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @AllArgsConstructor
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+
+    private final UserResponseDTOAssembler userResponseDTOAssembler;
 
     @PostMapping("/register")
     public ResponseEntity<UserModel> registerAUser(UserRequestDTO userRequestDto){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getUserModel(userService.registerAUser(userRequestDto)
-                        ,methodOn(UserController.class).registerAUser(userRequestDto)));
-    }
-
-    private UserModel getUserModel(UserResponseDTO userResponseDTO,Object method){
-        return new UserModel(userResponseDTO).add(linkTo(method).withSelfRel());
+                .body(userResponseDTOAssembler.toModel(userService.registerAUser(userRequestDto))
+                .add(linkTo(methodOn(UserController.class).registerAUser(userRequestDto)).withSelfRel()));
     }
 
 }

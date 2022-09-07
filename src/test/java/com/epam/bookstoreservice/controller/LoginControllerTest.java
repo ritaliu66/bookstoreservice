@@ -4,6 +4,7 @@ import com.epam.bookstoreservice.BookstoreServiceApplication;
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 ;
 import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
+import com.epam.bookstoreservice.mapper.TokenResponseDTOAssembler;
 import com.epam.bookstoreservice.model.TokenModel;
 import com.epam.bookstoreservice.service.impl.LoginServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
@@ -29,6 +31,9 @@ class LoginControllerTest {
     @Mock
     private LoginServiceImpl loginService;
 
+    @Autowired
+    private TokenResponseDTOAssembler tokenResponseDTOAssembler;
+
     private final static String USERNAME = "2";
 
     private final static String PASSWORD = "2";
@@ -39,7 +44,7 @@ class LoginControllerTest {
 
     @BeforeEach
     public void init() {
-        loginController = new LoginController(loginService);
+        loginController = new LoginController(loginService,tokenResponseDTOAssembler);
     }
 
     @Test

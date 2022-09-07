@@ -2,6 +2,7 @@ package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
+import com.epam.bookstoreservice.mapper.TokenResponseDTOAssembler;
 import com.epam.bookstoreservice.model.TokenModel;
 import com.epam.bookstoreservice.service.LoginService;
 import lombok.AllArgsConstructor;
@@ -24,17 +25,16 @@ public class LoginController {
 
     private final LoginService loginService;
 
+    private final TokenResponseDTOAssembler tokenResponseDTOAssembler;
+
     @PostMapping("/token")
     public ResponseEntity<TokenModel> loginAndReturnToken(UserRequestDTO userRequestDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getTokenModel(loginService.loginAndReturnToken(userRequestDto)
-                ,methodOn(LoginController.class).loginAndReturnToken(userRequestDto)));
+                .body(tokenResponseDTOAssembler
+                        .toModel(loginService.loginAndReturnToken(userRequestDto))
+                        .add(linkTo(methodOn(LoginController.class).loginAndReturnToken(userRequestDto)).withSelfRel()));
 
-    }
-
-    private TokenModel getTokenModel(TokenResponseDTO tokenResponseDTO, Object method) {
-        return new TokenModel(tokenResponseDTO).add(linkTo(method).withSelfRel());
     }
 
 }

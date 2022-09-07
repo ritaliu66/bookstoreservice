@@ -1,13 +1,14 @@
 package com.epam.bookstoreservice.controller;
 
 
+import com.epam.bookstoreservice.mapper.BookResponseDTOAssembler;
 import com.epam.bookstoreservice.dto.request.BookRequestDTO;
 import com.epam.bookstoreservice.dto.request.SellDTO;
-import com.epam.bookstoreservice.dto.response.BookResponseDTO;
 import com.epam.bookstoreservice.model.BookModel;
 import com.epam.bookstoreservice.model.IntegerModel;
 import com.epam.bookstoreservice.service.BookstoreService;
 import lombok.AllArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,37 +34,36 @@ public class BookStoreController {
 
     private final BookstoreService bookstoreService;
 
+    private final BookResponseDTOAssembler bookInfoAssembler;
+
     @PostMapping("/add-new-book")
     public ResponseEntity<BookModel> addNewBook(BookRequestDTO bookRequestDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModel(bookstoreService.addNewBook(bookRequestDTO)
-                        ,methodOn(BookStoreController.class).addNewBook(bookRequestDTO)));
+                .body(bookInfoAssembler.toModel(bookstoreService.addNewBook(bookRequestDTO)));
     }
 
     @PostMapping("/add-book")
     public ResponseEntity<BookModel> addExistentBook(BookRequestDTO bookRequestDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModel(bookstoreService.addExistentBook(bookRequestDTO)
-                        ,methodOn(BookStoreController.class).addExistentBook(bookRequestDTO)));
+                .body(bookInfoAssembler.toModel(bookstoreService.addExistentBook(bookRequestDTO)));
     }
 
     @GetMapping("/book/{id}")
     public ResponseEntity<BookModel> getBookById(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModel(bookstoreService.getBookById(id)
-                        ,methodOn(BookStoreController.class).getBookById(id)));
+                .body(bookInfoAssembler.toModel(bookstoreService.getBookById(id)));
     }
 
     @GetMapping("/book-list")
-    public ResponseEntity<List<BookModel>> getAllBooks() {
-
+    public ResponseEntity<CollectionModel<BookModel>> getAllBooks() {
+        CollectionModel<BookModel> bookModels = bookInfoAssembler.toCollectionModel(bookstoreService.getAllBooks());
+        bookModels.add(linkTo(methodOn(BookStoreController.class).getAllBooks()).withSelfRel());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModelList(bookstoreService.getAllBooks()
-                        ,methodOn(BookStoreController.class).getAllBooks()));
+                .body(bookModels);
 
     }
 
@@ -75,24 +74,26 @@ public class BookStoreController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(getIntegerModel(bookstoreService.getNumberOfBooksAvailableById(id)
-                ,methodOn(BookStoreController.class).getNumberOfBooksAvailableById(id)));
+                        , methodOn(BookStoreController.class).getNumberOfBooksAvailableById(id)));
     }
 
     @PostMapping("/sell-book/{id}")
     public ResponseEntity<BookModel> sellABook(@PathVariable Integer id) {
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(getBookModel(bookstoreService.sellABook(id)
-                ,methodOn(BookStoreController.class).sellABook(id)));
+                .body(bookInfoAssembler.toModel(bookstoreService.sellABook(id)));
     }
 
     @PostMapping("/sell-books")
-    public ResponseEntity<List<BookModel>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
-
+    public ResponseEntity<CollectionModel<BookModel>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
+        CollectionModel<BookModel> bookModels
+                = new BookResponseDTOAssembler().toCollectionModel(bookstoreService.sellListOfBooks(sellDTOList));
+        bookModels
+                .add(linkTo(methodOn(BookStoreController.class)
+                        .sellListOfBooks(sellDTOList)).withSelfRel());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModelList(bookstoreService.sellListOfBooks(sellDTOList)
-                        ,methodOn(BookStoreController.class).sellListOfBooks(sellDTOList)));
+                .body(bookModels);
     }
 
     @PutMapping("/update-book/{id}")
@@ -100,17 +101,20 @@ public class BookStoreController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModel(bookstoreService.updateABook(id,bookRequestDTO)
-                        ,methodOn(BookStoreController.class).updateABook(id,bookRequestDTO)));
+                .body(bookInfoAssembler.toModel(bookstoreService.updateABook(id, bookRequestDTO)));
     }
 
     @GetMapping("/books")
-    public ResponseEntity<List<BookModel>> getBooksByCategoryAndKeyWord(String category, String keyword) {
+    public ResponseEntity<CollectionModel<BookModel>> getBooksByCategoryAndKeyWord(String category, String keyword) {
+        CollectionModel<BookModel> bookModels
+                = bookInfoAssembler.toCollectionModel(bookstoreService.getBooksByCategoryAndKeyWord(category, keyword));
+        bookModels
+                .add(linkTo(methodOn(BookStoreController.class)
+                        .getBooksByCategoryAndKeyWord(category, keyword)).withSelfRel());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(getBookModelList(bookstoreService.getBooksByCategoryAndKeyWord(category, keyword)
-                        ,methodOn(BookStoreController.class).getBooksByCategoryAndKeyWord(category,keyword)));
+                .body(bookModels);
     }
 
     @GetMapping("/number-of-books")
@@ -119,20 +123,11 @@ public class BookStoreController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(getIntegerModel(bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)
-                ,methodOn(BookStoreController.class).getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)));
+                        , methodOn(BookStoreController.class).getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)));
     }
 
-    private BookModel getBookModel(BookResponseDTO bookResponseDTO, Object method) {
-        return new BookModel(bookResponseDTO).add(linkTo(method).withSelfRel());
-    }
 
-    private List<BookModel> getBookModelList(List<BookResponseDTO> bookResponseDTOList, Object method){
-        return bookResponseDTOList
-               .stream()
-               .map(bookResponseDTO -> getBookModel(bookResponseDTO, method)).collect(Collectors.toList());
-    }
-
-    private IntegerModel getIntegerModel(Integer number,Object method){
+    private IntegerModel getIntegerModel(Integer number, Object method) {
         return new IntegerModel(number).add(linkTo(method).withSelfRel());
     }
 }

@@ -4,6 +4,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
+/**
+ * the model for Integer
+ */
 @Getter
 @EqualsAndHashCode(callSuper = false)
 public class IntegerModel extends RepresentationModel<IntegerModel> {
