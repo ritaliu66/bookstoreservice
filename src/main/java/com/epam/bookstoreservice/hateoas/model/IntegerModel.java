@@ -1,4 +1,4 @@
-package com.epam.bookstoreservice.model;
+package com.epam.bookstoreservice.hateoas.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

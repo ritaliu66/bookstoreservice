@@ -1,4 +1,4 @@
-package com.epam.bookstoreservice.model;
+package com.epam.bookstoreservice.hateoas.model;
 
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;

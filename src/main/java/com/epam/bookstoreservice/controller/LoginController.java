@@ -1,9 +1,8 @@
 package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.dto.request.UserRequestDTO;
-import com.epam.bookstoreservice.dto.response.TokenResponseDTO;
-import com.epam.bookstoreservice.mapper.TokenResponseDTOAssembler;
-import com.epam.bookstoreservice.model.TokenModel;
+import com.epam.bookstoreservice.hateoas.assembler.TokenResponseDTOAssembler;
+import com.epam.bookstoreservice.hateoas.model.TokenModel;
 import com.epam.bookstoreservice.service.LoginService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

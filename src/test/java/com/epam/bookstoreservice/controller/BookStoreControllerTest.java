@@ -1,12 +1,12 @@
 package com.epam.bookstoreservice.controller;
 
 import com.epam.bookstoreservice.BookstoreServiceApplication;
-import com.epam.bookstoreservice.mapper.BookResponseDTOAssembler;
+import com.epam.bookstoreservice.hateoas.assembler.BookResponseDTOAssembler;
 import com.epam.bookstoreservice.dto.request.BookRequestDTO;
 import com.epam.bookstoreservice.dto.request.SellDTO;
 import com.epam.bookstoreservice.dto.response.BookResponseDTO;
-import com.epam.bookstoreservice.model.BookModel;
-import com.epam.bookstoreservice.model.IntegerModel;
+import com.epam.bookstoreservice.hateoas.model.BookModel;
+import com.epam.bookstoreservice.hateoas.model.IntegerModel;
 import com.epam.bookstoreservice.service.impl.BookstoreServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

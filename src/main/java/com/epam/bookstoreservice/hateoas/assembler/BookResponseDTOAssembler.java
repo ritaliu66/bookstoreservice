@@ -1,8 +1,8 @@
-package com.epam.bookstoreservice.mapper;
+package com.epam.bookstoreservice.hateoas.assembler;
 
 import com.epam.bookstoreservice.controller.BookStoreController;
 import com.epam.bookstoreservice.dto.response.BookResponseDTO;
-import com.epam.bookstoreservice.model.BookModel;
+import com.epam.bookstoreservice.hateoas.model.BookModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 

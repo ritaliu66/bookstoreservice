@@ -10,7 +10,6 @@ import com.epam.bookstoreservice.exception.BookNotFoundException;
 import com.epam.bookstoreservice.exception.UnmatchedIdException;
 import com.epam.bookstoreservice.mapper.BookDtoAndBookEntityMapper;
 
-import com.epam.bookstoreservice.model.BookModel;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,7 @@
-package com.epam.bookstoreservice.mapper;
+package com.epam.bookstoreservice.hateoas.assembler;
 
 import com.epam.bookstoreservice.dto.response.UserResponseDTO;
-import com.epam.bookstoreservice.model.UserModel;
+import com.epam.bookstoreservice.hateoas.model.UserModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
