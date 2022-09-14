@@ -4,6 +4,7 @@ import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.hateoas.assembler.TokenResponseDTOAssembler;
 import com.epam.bookstoreservice.hateoas.model.TokenModel;
 import com.epam.bookstoreservice.service.LoginService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/v1/login")
 @AllArgsConstructor
+@Tag(name = "login")
 public class LoginController {
 
     private final LoginService loginService;

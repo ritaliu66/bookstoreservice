@@ -47,18 +47,19 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 //Intercept all but login and logout
-                .antMatchers("/v1/login/token",
-                        "/User/logout",
-                        "/css/**",
-                        "/js/**",
-                        "/index .html",
-                        "/favicon .ico",
-                        "/doc .html",
-                        "/webjars/**",
+                .antMatchers(
+                        "/v1/login/token",
+                        "/v1/user/register",
+                        "/",
+                        "/swagger-ui.html",
+                        "/swagger-ui/",
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js",
                         "/swagger-resources/**",
-                        "/v2/api-docs/**",
-                        "/swagger-ui.html/**",
-                        "/v1/user/register").permitAll()
+                        "/v3/api-docs/**").permitAll()
                 .anyRequest()
                 .authenticated();
 
@@ -80,4 +81,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

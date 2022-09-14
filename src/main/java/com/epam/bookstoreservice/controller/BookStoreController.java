@@ -7,6 +7,7 @@ import com.epam.bookstoreservice.dto.request.SellDTO;
 import com.epam.bookstoreservice.hateoas.model.BookModel;
 import com.epam.bookstoreservice.hateoas.model.IntegerModel;
 import com.epam.bookstoreservice.service.BookstoreService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/v1/bookstore")
 @AllArgsConstructor
+@Tag(name = "bookstore")
 public class BookStoreController {
 
     private final BookstoreService bookstoreService;

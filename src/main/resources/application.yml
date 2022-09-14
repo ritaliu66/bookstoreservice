@@ -25,3 +25,11 @@ jwt:
   secret: bookstore-secret
   tokenHead: Bearer
   tokenHeader: Authorization
+
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+  packages-to-scan: com.epam.bookstoreservice.controller
+
