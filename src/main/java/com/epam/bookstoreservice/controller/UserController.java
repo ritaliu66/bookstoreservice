@@ -4,6 +4,7 @@ import com.epam.bookstoreservice.dto.request.UserRequestDTO;
 import com.epam.bookstoreservice.hateoas.assembler.UserResponseDTOAssembler;
 import com.epam.bookstoreservice.hateoas.model.UserModel;
 import com.epam.bookstoreservice.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class UserController {
     private final UserResponseDTOAssembler userResponseDTOAssembler;
 
     @PostMapping("/register")
+    @Operation(description  = "user register")
     public ResponseEntity<UserModel> registerAUser(UserRequestDTO userRequestDto){
         return ResponseEntity
                 .status(HttpStatus.OK)

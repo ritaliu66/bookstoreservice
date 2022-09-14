@@ -7,6 +7,7 @@ import com.epam.bookstoreservice.dto.request.SellDTO;
 import com.epam.bookstoreservice.hateoas.model.BookModel;
 import com.epam.bookstoreservice.hateoas.model.IntegerModel;
 import com.epam.bookstoreservice.service.BookstoreService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -39,6 +40,7 @@ public class BookStoreController {
     private final BookResponseDTOAssembler bookInfoAssembler;
 
     @PostMapping("/add-new-book")
+    @Operation(description = "add new book")
     public ResponseEntity<BookModel> addNewBook(BookRequestDTO bookRequestDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -46,6 +48,7 @@ public class BookStoreController {
     }
 
     @PostMapping("/add-book")
+    @Operation(description = "add existed book")
     public ResponseEntity<BookModel> addExistentBook(BookRequestDTO bookRequestDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -53,6 +56,7 @@ public class BookStoreController {
     }
 
     @GetMapping("/book/{id}")
+    @Operation(description = "get book by id")
     public ResponseEntity<BookModel> getBookById(@PathVariable Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -60,6 +64,7 @@ public class BookStoreController {
     }
 
     @GetMapping("/book-list")
+    @Operation(description = "get all books")
     public ResponseEntity<CollectionModel<BookModel>> getAllBooks() {
         CollectionModel<BookModel> bookModels = bookInfoAssembler.toCollectionModel(bookstoreService.getAllBooks());
         bookModels.add(linkTo(methodOn(BookStoreController.class).getAllBooks()).withSelfRel());
@@ -71,6 +76,7 @@ public class BookStoreController {
 
 
     @GetMapping("/number-of-books/{id}")
+    @Operation(description = "get number of books available by id")
     public ResponseEntity<IntegerModel> getNumberOfBooksAvailableById(@PathVariable Integer id) {
 
         return ResponseEntity
@@ -80,6 +86,7 @@ public class BookStoreController {
     }
 
     @PostMapping("/sell-book/{id}")
+    @Operation(description = "sell a book")
     public ResponseEntity<BookModel> sellABook(@PathVariable Integer id) {
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -87,6 +94,7 @@ public class BookStoreController {
     }
 
     @PostMapping("/sell-books")
+    @Operation(description = "sell list of books")
     public ResponseEntity<CollectionModel<BookModel>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
         CollectionModel<BookModel> bookModels
                 = new BookResponseDTOAssembler().toCollectionModel(bookstoreService.sellListOfBooks(sellDTOList));
@@ -99,6 +107,7 @@ public class BookStoreController {
     }
 
     @PutMapping("/update-book/{id}")
+    @Operation(description = "update a book")
     public ResponseEntity<BookModel> updateABook(@PathVariable Integer id, BookRequestDTO bookRequestDTO) {
 
         return ResponseEntity
@@ -107,6 +116,7 @@ public class BookStoreController {
     }
 
     @GetMapping("/books")
+    @Operation(description = "get books by category and keyword")
     public ResponseEntity<CollectionModel<BookModel>> getBooksByCategoryAndKeyWord(String category, String keyword) {
         CollectionModel<BookModel> bookModels
                 = bookInfoAssembler.toCollectionModel(bookstoreService.getBooksByCategoryAndKeyWord(category, keyword));
@@ -120,6 +130,7 @@ public class BookStoreController {
     }
 
     @GetMapping("/number-of-books")
+    @Operation(description = "get number of books sold per category and keyword")
     public ResponseEntity<IntegerModel> getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
 
         return ResponseEntity
