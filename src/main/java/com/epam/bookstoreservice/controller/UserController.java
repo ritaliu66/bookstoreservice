@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * the controller for user service
@@ -34,8 +32,7 @@ public class UserController {
     public ResponseEntity<UserModel> registerAUser(UserRequestDTO userRequestDto){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userResponseDTOAssembler.toModel(userService.registerAUser(userRequestDto))
-                .add(linkTo(methodOn(UserController.class).registerAUser(userRequestDto)).withSelfRel()));
+                .body(userResponseDTOAssembler.toModel(userService.registerAUser(userRequestDto),userRequestDto));
     }
 
 }

@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * the controller for login
@@ -35,8 +33,7 @@ public class LoginController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(tokenResponseDTOAssembler
-                        .toModel(loginService.loginAndReturnToken(userRequestDto))
-                        .add(linkTo(methodOn(LoginController.class).loginAndReturnToken(userRequestDto)).withSelfRel()));
+                        .toModel(loginService.loginAndReturnToken(userRequestDto),userRequestDto));
 
     }
 
