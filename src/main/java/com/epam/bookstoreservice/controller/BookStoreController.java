@@ -97,7 +97,7 @@ public class BookStoreController {
     @Operation(description = "sell list of books")
     public ResponseEntity<CollectionModel<BookModel>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
         CollectionModel<BookModel> bookModels
-                = new BookResponseDTOAssembler().toCollectionModel(bookstoreService.sellListOfBooks(sellDTOList));
+                = bookInfoAssembler.toCollectionModel(bookstoreService.sellListOfBooks(sellDTOList));
         bookModels
                 .add(linkTo(methodOn(BookStoreController.class)
                         .sellListOfBooks(sellDTOList)).withSelfRel());
