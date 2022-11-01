@@ -287,4 +287,15 @@ class BookstoreServiceImplTest {
     }
 
 
+    @Test
+    void test(){
+        BookEntity bookEntity =
+                new BookEntity(1,"rita","title","category",new BigDecimal("11.11"),1111,1111);
+
+        BookRequestDTO bookRequestDTO = new BookRequestDTO(null, "update_rita", null, null, null, null);
+
+        bookRequestDtoToBookEntity.toEntity(bookEntity,bookRequestDTO);
+
+        System.out.println(bookEntity.toString());
+    }
 }
