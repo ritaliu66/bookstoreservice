@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ import java.util.List;
 @AllArgsConstructor
 @Api
 @Validated
+@Data
 public class BookStoreController {
 
     private final BookstoreService bookstoreService;
