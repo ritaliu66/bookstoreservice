@@ -1,18 +1,18 @@
 package com.epam.bookstoreservice.controller;
 
 
-import com.epam.bookstoreservice.hateoas.assembler.BookResponseDTOAssembler;
 import com.epam.bookstoreservice.dto.request.BookRequestDTO;
 import com.epam.bookstoreservice.dto.request.SellDTO;
-import com.epam.bookstoreservice.hateoas.model.BookModel;
-import com.epam.bookstoreservice.hateoas.model.IntegerModel;
+import com.epam.bookstoreservice.dto.response.BookResponseDTO;
+import com.epam.bookstoreservice.dto.response.Result;
 import com.epam.bookstoreservice.service.BookstoreService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,124 +23,109 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 /**
  * controller for bookstore
  */
 @RestController
 @RequestMapping("/v1/bookstore")
 @AllArgsConstructor
-@Tag(name = "bookstore")
+@Api
+@Validated
 public class BookStoreController {
 
     private final BookstoreService bookstoreService;
 
-    private final BookResponseDTOAssembler bookInfoAssembler;
+    private static final String SUCCESSFUL_MESSAGE = "successful";
 
     @PostMapping("/add-new-book")
-    @Operation(description = "add new book")
-    public ResponseEntity<BookModel> addNewBook(BookRequestDTO bookRequestDTO) {
+    @ApiOperation("add new book")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<BookResponseDTO>> addNewBook(BookRequestDTO book) {
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookInfoAssembler.toModel(bookstoreService.addNewBook(bookRequestDTO)));
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.addNewBook(book)));
     }
 
+
     @PostMapping("/add-book")
-    @Operation(description = "add existed book")
-    public ResponseEntity<BookModel> addExistentBook(BookRequestDTO bookRequestDTO) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookInfoAssembler.toModel(bookstoreService.addExistentBook(bookRequestDTO)));
+    @ApiOperation("add existed book")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<BookResponseDTO>> addBook(BookRequestDTO book) {
+
+        return ResponseEntity.
+                ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.addBook(book)));
     }
 
     @GetMapping("/book/{id}")
-    @Operation(description = "get book by id")
-    public ResponseEntity<BookModel> getBookById(@PathVariable Integer id) {
+    @ApiOperation("get book by id")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<BookResponseDTO>> getBookById(@PathVariable Integer id) {
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookInfoAssembler.toModel(bookstoreService.getBookById(id)));
+                .ok(Result.success(SUCCESSFUL_MESSAGE, bookstoreService.getBookById(id)));
     }
 
     @GetMapping("/book-list")
-    @Operation(description = "get all books")
-    public ResponseEntity<CollectionModel<BookModel>> getAllBooks() {
-        CollectionModel<BookModel> bookModels = bookInfoAssembler.toCollectionModel(bookstoreService.getAllBooks());
-        bookModels.add(linkTo(methodOn(BookStoreController.class).getAllBooks()).withSelfRel());
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookModels);
+    @ApiOperation("get all books")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<List<BookResponseDTO>>> getAllBooks() {
 
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getAllBooks()));
     }
 
 
     @GetMapping("/number-of-books/{id}")
-    @Operation(description = "get number of books available by id")
-    public ResponseEntity<IntegerModel> getNumberOfBooksAvailableById(@PathVariable Integer id) {
+    @ApiOperation("get number of books available by id")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<Integer>> getNumberOfBooksAvailableById(@PathVariable Integer id) {
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(getIntegerModel(bookstoreService.getNumberOfBooksAvailableById(id)
-                        , methodOn(BookStoreController.class).getNumberOfBooksAvailableById(id)));
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getNumberOfBooksAvailableById(id)));
     }
 
     @PostMapping("/sell-book/{id}")
-    @Operation(description = "sell a book")
-    public ResponseEntity<BookModel> sellABook(@PathVariable Integer id) {
+    @ApiOperation("sell a book")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<BookResponseDTO>> sellABook(@PathVariable Integer id) {
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(bookInfoAssembler.toModel(bookstoreService.sellABook(id)));
+        return ResponseEntity
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.sellABook(id)));
     }
 
     @PostMapping("/sell-books")
-    @Operation(description = "sell list of books")
-    public ResponseEntity<CollectionModel<BookModel>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
-        CollectionModel<BookModel> bookModels
-                = bookInfoAssembler.toCollectionModel(bookstoreService.sellListOfBooks(sellDTOList));
-        bookModels
-                .add(linkTo(methodOn(BookStoreController.class)
-                        .sellListOfBooks(sellDTOList)).withSelfRel());
+    @ApiOperation("sell list of books")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<List<BookResponseDTO>>> sellListOfBooks(@RequestBody List<SellDTO> sellDTOList) {
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookModels);
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.sellListOfBooks(sellDTOList)));
     }
 
     @PutMapping("/update-book/{id}")
-    @Operation(description = "update a book")
-    public ResponseEntity<BookModel> updateABook(@PathVariable Integer id, BookRequestDTO bookRequestDTO) {
+    @ApiOperation("update a book")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<BookResponseDTO>> updateABook(@PathVariable Integer id, BookRequestDTO book) {
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookInfoAssembler.toModel(bookstoreService.updateABook(id, bookRequestDTO)));
+                .ok(Result.success(SUCCESSFUL_MESSAGE, bookstoreService.updateABook(id, book)));
     }
 
     @GetMapping("/books")
-    @Operation(description = "get books by category and keyword")
-    public ResponseEntity<CollectionModel<BookModel>> getBooksByCategoryAndKeyWord(String category, String keyword) {
-        CollectionModel<BookModel> bookModels
-                = bookInfoAssembler.toCollectionModel(bookstoreService.getBooksByCategoryAndKeyWord(category, keyword));
-        bookModels
-                .add(linkTo(methodOn(BookStoreController.class)
-                        .getBooksByCategoryAndKeyWord(category, keyword)).withSelfRel());
+    @ApiOperation("get books by category and keyword")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<List<BookResponseDTO>>> getBooksByCategoryAndKeyWord(String category, String keyword) {
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bookModels);
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getBooksByCategoryAndKeyWord(category, keyword)));
     }
 
     @GetMapping("/number-of-books")
-    @Operation(description = "get number of books sold per category and keyword")
-    public ResponseEntity<IntegerModel> getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
+    @ApiOperation("get number of books sold per category and keyword")
+    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header",defaultValue = "Bearer ",dataType = "String", name = "Authorization", required = true) })
+    public ResponseEntity<Result<Integer>> getNumberOfBooksSoldPerCategoryAndKeyword(String category, String keyword) {
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(getIntegerModel(bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)
-                        , methodOn(BookStoreController.class).getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)));
-    }
-
-
-    private IntegerModel getIntegerModel(Integer number, Object method) {
-        return new IntegerModel(number).add(linkTo(method).withSelfRel());
+                .ok(Result.success(SUCCESSFUL_MESSAGE,bookstoreService.getNumberOfBooksSoldPerCategoryAndKeyword(category, keyword)));
     }
 }
